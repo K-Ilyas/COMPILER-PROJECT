@@ -6,9 +6,10 @@ from VariableSymbol import VariableSymbole
 
 class BoundScope:
 
-    _variables = dict<str,VariableSymbole>()
+    _variables = None
 
     def __init__(self,parent) -> None:
+        self._variables = dict()
         self.parent = parent
 
     
@@ -16,6 +17,7 @@ class BoundScope:
         return self.parent
 
     def tryDeclare(self,variable):
+
         if variable.getName() in self._variables.keys() :
             return False
         
@@ -23,14 +25,13 @@ class BoundScope:
         return True
 
 
-    def tryLookUp(self,name,variable):
-        if name in self._variables.Keys():
-           return True
+    def tryLookUp(self,name):
+        if name in self._variables.keys():
+           return (True,self._variables[name])
 
         if self.parent is None:
-           return False
-
-        return self.parent.tryLookUp(name, variable)
+           return (False,None)
+        return self.parent.tryLookUp(name)
 
     def getDeclaredVariables(self):
         return self._variables.values()

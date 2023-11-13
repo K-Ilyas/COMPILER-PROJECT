@@ -2,31 +2,47 @@
 
 import sys
 from EvaluationResult import EvaluationResult
+import threading
 
 sys.path.insert(0, 'C:/Users/ilyas/Documents/compiler/syntaxAnalyse')
 from Binding.Binder import Binder
 from Evaluator import Evaluator
 
 class Compiltaion:
+    _globalScope = None
 
+    def __init__(self,previous=None,syntaxTree=None) -> None:
 
-    def __init__(self,syntaxTree) -> None:
-        self.syntaxTree= syntaxTree 
+        if syntaxTree == None :
+           self.syntaxTree= previous 
+           self.previous = None
+        else :
+           self.previous = previous
+           self.syntaxTree= syntaxTree 
+           
 
 
     def getSyntaxTree(self):
         return self.syntaxTree
+    def globalScope(self):
+
+        if self._globalScope == None:
+            globalScope = Binder.bindGlobalScope(None if self.previous == None else self.previous.globalScope() , self.syntaxTree.getRoot())
+            if self._globalScope is None :
+                self._globalScope = globalScope
+
+        return self._globalScope
     
+    def ContinueWith(self,syntaxTree):
+        return Compiltaion(self,syntaxTree)
+
 
     def evaluate(self,variables):
 
-        binder = Binder(variables)
-        boundExpression = binder.BindExpression(self.syntaxTree.getRoot().getExpression())
-
-        diagnostics = self.syntaxTree.getErrors().getDiagnostics() + binder.getDignostics().getDiagnostics()
+        diagnostics = self.syntaxTree.getErrors().getDiagnostics() + self.globalScope().getDiagnostics().getDiagnostics()
         
         if len(diagnostics) !=0 :
             return EvaluationResult(diagnostics,None)
-        evaluator = Evaluator(boundExpression,variables)
+        evaluator = Evaluator(self.globalScope().getStatement(),variables)
         value = evaluator.result()
         return EvaluationResult([],value)

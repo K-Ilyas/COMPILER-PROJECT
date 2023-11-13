@@ -40,11 +40,11 @@ class SyntaxNode(ABC):
         
         @staticmethod
         def printResultAsTree(writer,child,sep="",isLast = True):
-
               marker =   "└──" if isLast else "├──"
               writer(sep,end="")
               writer(marker,end="")
               writer(child.getType(),end="")
+              
               from SyntaxToken import SyntaxToken
 
               if isinstance(child,SyntaxToken) and child.getValue() != None :

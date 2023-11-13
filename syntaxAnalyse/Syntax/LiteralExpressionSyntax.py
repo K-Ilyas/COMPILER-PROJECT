@@ -18,7 +18,7 @@ class LiteralExpressionSyntax(ExpressionSyntax):
 
     def getLiteralToken(self):
         return self.literalToken
-
+    
     # def getValue(self):
     #     return self.literalToken.getValue()
 
@@ -27,6 +27,7 @@ class LiteralExpressionSyntax(ExpressionSyntax):
     
     def getType(self):
         return Tokens.LiteralExpression
+
     # def getChildrens(self):
     #     yield self.literalToken
 

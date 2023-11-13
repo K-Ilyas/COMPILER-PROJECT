@@ -11,6 +11,8 @@ class Tokens(Enum):
     SlashToken = auto(),
     OpenParenthesisToken = auto(),
     CloseParenthesisToken = auto(),
+    OpenBraceToken = auto(),
+    CloseBraceToken = auto(),
     BadToken = auto(),
     EndOfFileToken = auto(),
     LiteralExpression = auto(),
@@ -21,6 +23,8 @@ class Tokens(Enum):
     UnrayExpression = auto(),
     TrueKeyword = auto(),
     FalseKeyword = auto(),
+    VarKeyword= auto(),
+    ConstKeyword = auto(),
     IdentifierToken = auto(),
     BangToken = auto(),
     AmpersandAmpersandToken = auto(),
@@ -28,4 +32,7 @@ class Tokens(Enum):
     EqualsEqualsToken = auto(),
     BangEqualsToken = auto(),
     EqualsToken = auto(),
-    CompilationUnit = auto()
+    CompilationUnit = auto(),
+    BlockStatement = auto(),
+    ExpressionStatement= auto(),
+    VariableDeclaration = auto()

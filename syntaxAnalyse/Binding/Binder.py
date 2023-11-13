@@ -3,12 +3,19 @@ from Binding.BoundAssignmentExpression import BoundAssignmentExpression
 from Binding.BoundBinaryExpression import BoundBinaryExpression
 from Binding.BoundBinaryOperator import BoundBinaryOperator
 from Binding.BoundBinaryOperatorType import BoundBinaryOperatorType
+from Binding.BoundBlockStatement import BoundBlockStatement
+from Binding.BoundExpressionStatement import BoundExpressionStatement
+from Binding.BoundGlobalScope import BoundGlobalScope
 from Binding.BoundLiteralExpression import BoundLiteralExpression
+from Binding.BoundScope import BoundScope
 from Binding.BoundUnrayExpression import BoundUnrayExpression
 from Binding.BoundUnrayOperator import BoundUnrayOperator
 from Binding.BoundUnrayOperatorType import BoundUnrayOperatorType
 import sys
+from Binding.BoundVariableDeclaration import BoundVariableDeclaration
 from Binding.BoundVariableExpression import BoundVariableExpression
+
+
 
 sys.path.insert(0, 'C:/Users/ilyas/Documents/compiler/syntaxAnalyse')
 
@@ -24,15 +31,99 @@ from UnrayExpressionSyntax import UnrayExpressionSyntax
 from ParenthesizedExpressionSyntax import ParenthesizedExpressionSyntax
 from NameExpressionSyntax import NameExpressionSyntax
 from AssignmentExpressionSyntax import AssignmentExpressionSyntax
-
+from BlockStatementSyntax import BlockStatementSyntax
+from ExpressionStatementSyntax import ExpressionStatementSyntax
+from VariableDeclarationSyntax import VariableDeclarationSyntax
 
 class Binder():
 
-    _diagnostics = DiagnosticBag()
+    _diagnostics = None
     _variables =dict()
+    _scope = None
 
-    def __init__(self,variables) -> None:
-        self._variables = variables
+    def __init__(self,parent) -> None:
+        self._diagnostics = DiagnosticBag()
+        self._scope = BoundScope(parent)
+        
+
+    def getScope(self):
+        return self._scope
+    @staticmethod
+    def bindGlobalScope(previous,syntax):
+        parentScope = Binder.createParentScope(previous)
+        binder = Binder(parentScope)
+        expression = binder.BindStatement(syntax.getStatement())
+        variables = binder.getScope().getDeclaredVariables()
+        diagnostics = binder.getDignostics()
+        if previous != None:
+            diagnostics.InsertRange(0,previous.getDiagnostics())
+        return BoundGlobalScope(previous,diagnostics,variables,expression)
+    
+    @staticmethod    
+    def createParentScope(previous):
+        stack = []
+        while previous != None :
+            stack.append(previous)
+            previous = previous.getPrevious()
+        
+        parent = None 
+
+        while len(stack) > 0:
+            previous = stack.pop()
+            scope = BoundScope(parent)
+
+            for v in previous.getVariables():
+                scope.tryDeclare(v)
+
+            parent = scope
+        print(parent)
+        return parent
+    
+
+    def BindStatement(self, syntax):
+        
+        match(syntax.getType()):  
+            case Tokens.BlockStatement :
+                syntax.__class__ = BlockStatementSyntax
+                return self.BindBlockStatement(syntax)
+            case Tokens.VariableDeclaration :
+                syntax.__class__ = VariableDeclarationSyntax
+                return self.BindVariableDeclaration(syntax)
+            case Tokens.ExpressionStatement :
+                syntax.__class__ = ExpressionStatementSyntax
+                return self.BindExpressionStatement(syntax)
+            case _:
+                raise Exception(
+                    "Unexpected syntax {}".format(syntax.getType()))
+            
+    def BindBlockStatement(self,syntax):
+        statements = [] 
+        self._scope = BoundScope(self._scope)
+
+        for statementSyntax in syntax.getStatments() :
+            statement = self.BindStatement(statementSyntax)
+            statements.append(statement)
+        self._scope = self._scope.getParent()
+        return BoundBlockStatement(statements)
+    
+    def BindVariableDeclaration(self,syntax):
+           
+            name = syntax.getIdentifier().getText()
+            isReadOnly = syntax.getKeyword().getType() == Tokens.ConstKeyword 
+            initializer = self.BindExpression(syntax.getIntializer())
+            variable =  VariableSymbole(name, isReadOnly, initializer.type())
+
+            succed = self._scope.tryDeclare(variable)
+    
+            if not succed :
+                self._diagnostics.ReportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(), name)
+
+            return  BoundVariableDeclaration(variable, initializer)
+
+    def BindExpressionStatement(self,syntax):
+        expression = self.BindExpression(syntax.getExpression())
+        return BoundExpressionStatement(expression)
+    
     def BindExpression(self, syntax):
 
         match(syntax.getType()):  
@@ -70,31 +161,38 @@ class Binder():
     def BindNameExpression(self,syntax):
         
         name =  syntax.getIdentifierToken().getText()
-        variable = list(filter(lambda v : v.getName() == name,self._variables.keys()))
-        
-        if len(variable) == 0:
+        variable =  self._scope.tryLookUp(name)
+
+        if not variable[0]:
             self._diagnostics.ReportUndefinedName(syntax.getIdentifierToken().getSpan(),name)
             return BoundLiteralExpression(0)
         # self._variables[name].getType() if self._variables[name].getType() == None else object
-        return BoundVariableExpression(variable[0])
+        return BoundVariableExpression(variable[1])
 
 
     def BindAssignmentExpression(self,syntax):
        name =  syntax.getIdentifierToken().getText()
        boundExpression = self.BindExpression(syntax.getExpression())
-       existingVariable = self._variables.get(name,None)
-       if existingVariable != None :
-           del self._variables[variable]
+
+       exist = self._scope.tryLookUp(name)
+       if not exist[0]:
+            self._diagnostics.ReportUndefinedName(syntax.getIdentifierToken().getSpan(),name)
+            return boundExpression
        
+       if exist[1].getIsReadOnly() :
+            self._diagnostics.ReportCannotAssign(syntax.getEqualsToken().getSpan(),name)
+
         
-       variable = VariableSymbole(name,boundExpression.type())
-       self._variables[variable] = None
+       if exist[1] != None and boundExpression.type() != exist[1].type():
+            self._diagnostics.ReportCannotConvert(syntax.getExpression().getLiteralToken().getSpan(),boundExpression.type(),exist[1].type())
+            return boundExpression
+
     #    defaultValue = 0 if boundExpression.type() == int else (False if boundExpression.type() == bool else None)
 
     #    if defaultValue == None :
     #        raise Exception("Unsupported variable type {}".format(boundExpression.getType()))
-       
-       return BoundAssignmentExpression(variable,boundExpression) 
+         
+       return BoundAssignmentExpression(exist[1],boundExpression) 
 
     def BindUnaryExpression(self, syntax):
 
@@ -180,6 +278,7 @@ class Binder():
     #                 return BoundBinaryOperatorType.LogicalOr
                
     def getDignostics(self):
+        # print(self._diagnostics)
         return self._diagnostics
     
     def getVariables(self):

@@ -34,6 +34,10 @@ class SynataxFacts():
                  return Tokens.TrueKeyword
             case "false":
                 return Tokens.FalseKeyword
+            case "const":
+                 return Tokens.ConstKeyword
+            case "var":
+                return Tokens.VarKeyword
             case _:
                 return Tokens.IdentifierToken
     @staticmethod
@@ -74,10 +78,19 @@ class SynataxFacts():
                     return "("
                 case Tokens.CloseParenthesisToken:
                     return ")"
+                case Tokens.OpenBraceToken:
+                    return "{"
+                case Tokens.CloseBraceToken:
+                    return "}"
                 case Tokens.FalseKeyword:
                     return "false"
                 case Tokens.TrueKeyword:
                     return "true"
+                case Tokens.VarKeyword:
+                    return "var"
+                case Tokens.ConstKeyword :
+                    return "const"
+                
                 case _:
                     return None
         

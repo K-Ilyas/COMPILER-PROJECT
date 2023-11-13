@@ -87,6 +87,13 @@ class Lex:
                 case ')':
                     self.__type= Tokens.CloseParenthesisToken
                     self.incPos()
+
+                case '{':
+                    self.__type= Tokens.OpenBraceToken
+                    self.incPos()
+                case '}':
+                    self.__type= Tokens.CloseBraceToken
+                    self.incPos()
                 case '&':
                     if  self.lookahead() == '&':
                     
@@ -98,7 +105,6 @@ class Lex:
                     
                         self.__type= Tokens.PipePipeToken
                         self.__position += 2
-                    
                     
                 case '=':
                     self.incPos()
@@ -252,13 +258,10 @@ class Lex:
 
         length = self.__position - self.__start
 
-
-          
         text = SynataxFacts.GetText(self.__type)
 
         if text == None :
             text = self.text.ToString_start( self.__start,self.__start + length )
-
 
         return  SyntaxToken(self.__type, self.__start, text, self.__value);
     

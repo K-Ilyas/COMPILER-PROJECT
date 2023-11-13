@@ -7,12 +7,12 @@ from Tokens import Tokens
 
 class CompilationUnitSyntax(ExpressionSyntax):
 
-        def __init__(self,expression,endFileToken) -> None:
-            self.expression =expression
+        def __init__(self,statement,endFileToken) -> None:
+            self.statement =statement
             self.endFileToken = endFileToken
       
-        def getExpression(self):
-         return self.expression
+        def getStatement(self):
+         return self.statement
     
         def getEndFileToken(self):
          return self.__endFileToken

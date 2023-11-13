@@ -7,4 +7,7 @@ class BoundNodeType(Enum):
     LiteralExpression = auto(),
     BinaryExpression = auto(),
     VariableExpression = auto(),
-    AssignmentExpression = auto()
+    AssignmentExpression = auto(),
+    BlockStatement = auto(),
+    ExpressionStatement = auto(),
+    VariableDeclaration = auto()

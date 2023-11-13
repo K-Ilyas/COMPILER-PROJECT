@@ -11,7 +11,7 @@ from Tokens import Tokens
 
 class SyntaxTree(ABC):
     __root = 0
-    __errors = []
+    __errors = None
 
     def __init__(self,text) :
         parser = Parse.Parse(text)
@@ -19,6 +19,10 @@ class SyntaxTree(ABC):
         errors = parser.getErrors()
         self.__text = text
         self.__root = root
+
+        if self.__errors is None :
+            self.__errors = []
+
         self.__errors = deepcopy(errors)
 
     def getErrors(self):

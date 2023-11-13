@@ -12,7 +12,7 @@
 
 #     print(next.getType(),next.getPos(),next.getText(),next.getValue())
 
-import sys
+import sys,gc
 
 from colorama import Fore, Back, Style
 
@@ -28,8 +28,6 @@ from  SyntaxTree import SyntaxTree
 
 pyCode = ""
 variables = dict()
-variables[VariableSymbole("a",int)] =12
-variables[VariableSymbole("b",bool)] = True
 
 def printCode(child):
 
@@ -75,94 +73,73 @@ def printResultAsTree(child,sep,isLast = True):
 
     for child2 in child.getChildrens():
         printResultAsTree(child2,sep, last == child2)
-
-syntaxTree = None
-textBuilder = ""
-syntaxTree = None
-while True :
-     line = input(" : ")
-
-     if line.strip() == "#":
-          break
-     else :
-          textBuilder += line + '\n'
-          
     
+previous = None
+
+while True :
+       textBuilder = ""
+       while True :
+            line = input(" : ")
+
+            if line.strip() == "#":
+                 break
+            else :
+                 textBuilder += line + '\n'
+
      
-syntaxTree = SyntaxTree.Parse(textBuilder)
+       syntaxTree = SyntaxTree.Parse(textBuilder)
 
- # printResultAsTree(syntaxTree.getRoot(),"")
-compiltaion = None
-compiltaion = Compiltaion(syntaxTree)
-
-result = None
-result = compiltaion.evaluate(variables)
+       # printResultAsTree(syntaxTree.getRoot(),"")
+       compiltaion =  Compiltaion(syntaxTree) if previous is None else previous.ContinueWith(syntaxTree)
+       result = None
+       result = compiltaion.evaluate(variables)
 
 
-if result.getDiagnostics() != [] :
-    text = syntaxTree.getText()
+       if result.getDiagnostics() != [] :
+           text = syntaxTree.getText()
 
-    for diagnostic in result.getDiagnostics() :
+           for diagnostic in result.getDiagnostics() :
                         
-                        lineIndex = text.getLineIndex(int(diagnostic.getSpan().getStart()))
-                        lineIndex = syntaxTree.getText().getLineIndex(diagnostic.getSpan().getStart())
-                        line = syntaxTree.getText().getLines()[lineIndex]
-                        lineNumber = lineIndex + 1
-                        character = diagnostic.getSpan().getStart() - line.getStart() + 1
+                               lineIndex = text.getLineIndex(int(diagnostic.getSpan().getStart()))
+                               lineIndex = syntaxTree.getText().getLineIndex(diagnostic.getSpan().getStart())
+                               line = syntaxTree.getText().getLines()[lineIndex]
+                               lineNumber = lineIndex + 1
+                               character = diagnostic.getSpan().getStart() - line.getStart() + 1
 
-                        print(Fore.RED,end="")
-                        print(f"({lineNumber}, {character}): ",end="")
-                        print(diagnostic)
-                        print(Style.RESET_ALL,end="")
+                               print(Fore.RED,end="")
+                               print(f"({lineNumber}, {character}): ",end="")
+                               print(diagnostic)
+                               print(Style.RESET_ALL,end="")
 
-                        prefixSpan = TextSpan.fromBounds(line.getStart(), diagnostic.getSpan().getStart())
-                        suffixSpan = TextSpan.fromBounds(diagnostic.getSpan().getEnd(), line.end())
-
-
-                        prefix = syntaxTree.getText().ToString_span(prefixSpan)
-                        error = syntaxTree.getText().ToString_span(diagnostic.getSpan())
-                        suffix = syntaxTree.getText().ToString_span(suffixSpan)
-
-                        print("    ",end="")
-                        print(prefix,end="")
-
-                        print(Fore.RED,end="")
-                        print(error,end="")
-                        print(Style.RESET_ALL,end="")
-
-                        print(suffix,end="")
-
-                        print("")
+                               prefixSpan = TextSpan.fromBounds(line.getStart(), diagnostic.getSpan().getStart())
+                               suffixSpan = TextSpan.fromBounds(diagnostic.getSpan().getEnd(), line.end())
 
 
-                        # print("")
+                               prefix = syntaxTree.getText().ToString_span(prefixSpan)
+                               error = syntaxTree.getText().ToString_span(diagnostic.getSpan())
+                               suffix = syntaxTree.getText().ToString_span(suffixSpan)
 
-                        # print(Fore.RED,end="")
-                        # print(diagnostic)
-                        # print(Style.RESET_ALL,end="")
+                               print("    ",end="")
+                               print(prefix,end="")
 
-                        
-                        # prefix = line[0:diagnostic.getSpan().getStart()]
-                        # error = line[diagnostic.getSpan().getStart():diagnostic.getSpan().getStart()+diagnostic.getSpan().getLength()]
-                        # suffix = line[diagnostic.getSpan().getEnd():]
+                               print(Fore.RED,end="")
+                               print(error,end="")
+                               print(Style.RESET_ALL,end="")
 
-                        # print("    ",end="")
-                        # print(prefix,end="")
-                        # print(Fore.RED + error,end="")
-                        # print(Style.RESET_ALL,end="")
+                               print(suffix,end="")
 
-                        # print(suffix,end="")
+                               print("")
 
-                        # print("")
+       else :
+           print(result.getValue())
+           syntaxTree.getRoot().WriteTo(print)
+           previous = compiltaion
 
-else :
-    print(result.getValue())
-    syntaxTree.getRoot().WriteTo(print)
-
-
-if result.getDiagnostics() == [] :
-        printCode(syntaxTree.getRoot())
-        pyFile = open("pyCode.py","w")
-        pyFile.write("print("+pyCode+")")
+    
+    #    if result.getDiagnostics() == [] :
+    #            printCode(syntaxTree.getRoot())
+    #            pyFile = open("pyCode.py","w")
+    #            pyFile.write("print("+pyCode+")")
+      
 
 #  print(pyCode)
