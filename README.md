@@ -11,7 +11,9 @@
 * declare variables : var to declare global variables and const to declare read-only variables
 * support scopes ( define nested scops using Curly brackets `{`,`}`)
 
-* Tree example : 
+* Tree example :
+  
+``` 
 └──Tokens.CompilationUnit
     ├──Tokens.ExpressionStatement
     │   └──Tokens.BinaryExpression
@@ -21,6 +23,7 @@
     │       └──Tokens.LiteralExpression
     │           └──Tokens.NumberToken  20
     └──Tokens.EndOfFileToken
+```
 
 ### next features :
 
