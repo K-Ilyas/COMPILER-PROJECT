@@ -8,7 +8,7 @@
 * Handle `+`, `-`, `*`, `/`, `||`, `&&` and parenthesized expressions
 * Print syntax trees ( Tree represenation of the parser )
 * support unray operators (`-`,`+`)
-* declare variables : var to declare global variables and const to declare read-only variables
+* declare variables : `var` to declare global variables and `const` to declare read-only variables
 * support scopes ( define nested scops using Curly brackets `{`,`}`)
 
 * Tree example :
