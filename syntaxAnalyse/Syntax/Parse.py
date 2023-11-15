@@ -163,12 +163,6 @@ class Parse:
                self.__listTokens.insert(self.__position,keyword)
 
 
-            
-
-        
-            
-           
-
         print(self.__position,len(self.__listTokens))
 
 
