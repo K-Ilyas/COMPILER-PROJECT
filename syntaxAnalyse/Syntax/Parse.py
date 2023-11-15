@@ -94,7 +94,6 @@ class Parse:
     
     def ParseStatement(self):
 
-        print("type :",self.current().getType())
         if self.current().getType() == Tokens.OpenBraceToken :
             return self.ParseBlockStatement()
         if self.current().getType() == Tokens.VarKeyword or self.current().getType() == Tokens.ConstKeyword :
@@ -127,7 +126,6 @@ class Parse:
     def ParseVariableDeclaration(self):
         VariableDeclarations= []
         variablesPosition = []
-        print(self.current().getType())
         expected = Tokens.ConstKeyword if  self.current().getType() == Tokens.ConstKeyword else Tokens.VarKeyword
         keyword = self.MatchToken(expected)
         identifier = self.MatchToken(Tokens.IdentifierToken)
@@ -139,7 +137,6 @@ class Parse:
                 variablesPosition.append(self.__position)
                 VariableDeclarations.append(self.MatchToken(Tokens.IdentifierToken))
                 enterTest = True
-                print(self.current().getType())
             else :
                 break
         equalPos = self.__position
@@ -163,12 +160,8 @@ class Parse:
                self.__listTokens.insert(self.__position,keyword)
 
 
-        print(self.__position,len(self.__listTokens))
-
-
-        data = VariableDeclarationSyntax(keyword,identifier,equals,intializer,semiColonToken)
-        print(data)
-        return data
+      
+        return VariableDeclarationSyntax(keyword,identifier,equals,intializer,semiColonToken)
     
     def ParseExpressionStatement(self):
         expression = self.ParseExpression()
@@ -183,10 +176,8 @@ class Parse:
 
             statement = self.ParseStatement()
             statements.append(statement)
-
-            if self.current() == startToken :
+            if self.current() == startToken and self.current().getType() != Tokens.VarKeyword and self.current().getType() != Tokens.ConstKeyword  :
                 self.NextToken()
-            
         closeBraceToken = self.MatchToken(Tokens.CloseBraceToken)
 
         return BlockStatementSyntax(openBraceToken,statements,closeBraceToken)

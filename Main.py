@@ -171,7 +171,7 @@ while True :
                                print("")
 
        else :     
-        #    syntaxTree.getRoot().WriteTo(print)
+           syntaxTree.getRoot().WriteTo(print)
            print(result.getValue())
            previous = compiltaion
 
