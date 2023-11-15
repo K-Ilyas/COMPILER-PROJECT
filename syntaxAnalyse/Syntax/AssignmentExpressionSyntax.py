@@ -7,11 +7,12 @@ from Tokens import Tokens
 
 class AssignmentExpressionSyntax(ExpressionSyntax):
 
-        def __init__(self,identifierToken,equalsToken,expression) -> None:
+        def __init__(self,identifierToken,equalsToken,expression,semiColonToken) -> None:
             
             self.identifierToken = identifierToken
             self.equalsToken = equalsToken
             self.expression = expression
+            self.semiColonToken = semiColonToken
           #   self.data = {identifierToken : self.identifierToken,equalsToken :self.equalsToken,expression :self.expression }
         
         
@@ -23,6 +24,9 @@ class AssignmentExpressionSyntax(ExpressionSyntax):
         
         def getExpression(self):
              return self.expression
+        
+        def getSemiColonToken(self):
+             return self.semiColonToken
         
         def getType(self):
              return Tokens.AssignmentExpression

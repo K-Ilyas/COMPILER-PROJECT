@@ -5,7 +5,9 @@ from Binding.BoundBinaryOperator import BoundBinaryOperator
 from Binding.BoundBinaryOperatorType import BoundBinaryOperatorType
 from Binding.BoundBlockStatement import BoundBlockStatement
 from Binding.BoundExpressionStatement import BoundExpressionStatement
+from Binding.BoundForStatement import BoundForStatement
 from Binding.BoundGlobalScope import BoundGlobalScope
+from Binding.BoundIfStatement import BoundIfStatement
 from Binding.BoundLiteralExpression import BoundLiteralExpression
 from Binding.BoundScope import BoundScope
 from Binding.BoundUnrayExpression import BoundUnrayExpression
@@ -14,6 +16,9 @@ from Binding.BoundUnrayOperatorType import BoundUnrayOperatorType
 import sys
 from Binding.BoundVariableDeclaration import BoundVariableDeclaration
 from Binding.BoundVariableExpression import BoundVariableExpression
+from Binding.BoundWhileStatement import BoundWhileStatement
+
+import types
 
 
 
@@ -34,6 +39,9 @@ from AssignmentExpressionSyntax import AssignmentExpressionSyntax
 from BlockStatementSyntax import BlockStatementSyntax
 from ExpressionStatementSyntax import ExpressionStatementSyntax
 from VariableDeclarationSyntax import VariableDeclarationSyntax
+from IfStatementSyntax import IfStatementSyntax
+from WhileStatementSyntax import WhileStatementSyntax
+from ForStatementSyntax import ForStatementSyntax
 
 class Binder():
 
@@ -76,19 +84,34 @@ class Binder():
                 scope.tryDeclare(v)
 
             parent = scope
-        print(parent)
         return parent
     
 
     def BindStatement(self, syntax):
-        
-        match(syntax.getType()):  
+
+        if  isinstance(syntax, types.GeneratorType) :
+            for item in syntax :
+                item.__class__ = VariableDeclarationSyntax
+                print(item.getType())
+                self.BindStatement(item)
+        else :
+
+         match(syntax.getType()):  
             case Tokens.BlockStatement :
                 syntax.__class__ = BlockStatementSyntax
                 return self.BindBlockStatement(syntax)
             case Tokens.VariableDeclaration :
                 syntax.__class__ = VariableDeclarationSyntax
                 return self.BindVariableDeclaration(syntax)
+            case Tokens.IfStatement :
+                syntax.__class__ = IfStatementSyntax
+                return self.BindIfStatement(syntax)
+            case Tokens.WhileStatement :
+                syntax.__class__ = WhileStatementSyntax
+                return self.BindWhileStatement(syntax)
+            case Tokens.ForStatement :
+                syntax.__class__ = ForStatementSyntax
+                return self.BindForStatement(syntax)
             case Tokens.ExpressionStatement :
                 syntax.__class__ = ExpressionStatementSyntax
                 return self.BindExpressionStatement(syntax)
@@ -123,7 +146,53 @@ class Binder():
     def BindExpressionStatement(self,syntax):
         expression = self.BindExpression(syntax.getExpression())
         return BoundExpressionStatement(expression)
+
+
+    def BindIfStatement(self,syntax):
+        condition = self.BindExpressionIf(syntax.getCondition(),bool)
+        statement = self.BindStatement(syntax.getThenStatement())
+        elseStatement = None if syntax.getElseClauseSyntax() == None else self.BindStatement(syntax.getElseClauseSyntax().getElseStatement())
+        return BoundIfStatement(condition,statement,elseStatement)
     
+    def BindWhileStatement(self,syntax):
+        condition = self.BindExpressionIf(syntax.getCondition(),bool)
+        print("wow",condition.getType())
+        body = self.BindStatement(syntax.getBody())
+        print("before",body.getType())
+
+        new_var = BoundWhileStatement(condition,body)
+        print("wow",new_var.getBody().getType())
+
+        return new_var
+    def BindForStatement(self,syntax):
+        lowerBound = self.BindExpressionIf(syntax.getLowerBound(),int)
+        upperBound = self.BindExpressionIf(syntax.getUpperBound(),int)
+
+        self._scope = BoundScope(self._scope)
+
+        name = syntax.getIdentifier().getText()
+
+        variable = VariableSymbole(name,True,int)
+
+        if not self._scope.tryDeclare(variable) :
+            self._diagnostics.ReportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(),name)
+
+        body = self.BindStatement(syntax.getBody())
+
+        self._scope = self._scope.getParent()
+
+        return BoundForStatement(variable,lowerBound,upperBound,body)
+            
+
+
+
+    def BindExpressionIf(self,syntax,targetType):
+        result = self.BindExpression(syntax)
+        if result.type() != targetType :
+           self._diagnostics.ReportCannotConvert(syntax.getSpan(),result.type(), targetType)
+        
+        return result
+
     def BindExpression(self, syntax):
 
         match(syntax.getType()):  
@@ -175,6 +244,7 @@ class Binder():
        boundExpression = self.BindExpression(syntax.getExpression())
 
        exist = self._scope.tryLookUp(name)
+       print(name)
        if not exist[0]:
             self._diagnostics.ReportUndefinedName(syntax.getIdentifierToken().getSpan(),name)
             return boundExpression
@@ -219,7 +289,6 @@ class Binder():
         boundOperator = BoundBinaryOperator.bind(
             syntax.getOperatorToken().getType(), boundLeft.type(), boundRight.type())
         
-        # print(boundLeft.getName(),boundRight.getName())
 
         if boundOperator == None:
             self._diagnostics.ReportUndefinedBinaryOperator(syntax.getOperatorToken().getSpan(),syntax.getOperatorToken().getText(),boundLeft.type(),boundRight.type())

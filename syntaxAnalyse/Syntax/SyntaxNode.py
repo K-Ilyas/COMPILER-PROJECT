@@ -35,34 +35,34 @@ class SyntaxNode(ABC):
                  for child in property_value:
                     yield child
 
-        def WriteTo(self,writer):
-            return SyntaxNode.printResultAsTree(writer,self)
+        # def WriteTo(self,writer):
+        #     return SyntaxNode.printResultAsTree(writer,self)
         
-        @staticmethod
-        def printResultAsTree(writer,child,sep="",isLast = True):
-              marker =   "└──" if isLast else "├──"
-              writer(sep,end="")
-              writer(marker,end="")
-              writer(child.getType(),end="")
+        # @staticmethod
+        # def printResultAsTree(writer,child,sep="",isLast = True):
+        #       marker =   "└──" if isLast else "├──"
+        #       writer(sep,end="")
+        #       writer(marker,end="")
+        #       writer(child.getType(),end="")
               
-              from SyntaxToken import SyntaxToken
+        #       from SyntaxToken import SyntaxToken
 
-              if isinstance(child,SyntaxToken) and child.getValue() != None :
-                  writer("  ",end="")
-                  writer(child.getValue(),end="")
+        #       if isinstance(child,SyntaxToken) and child.getValue() != None :
+        #           writer("  ",end="")
+        #           writer(child.getValue(),end="")
         
-              writer("")
+        #       writer("")
 
-              sep += "    " if isLast else "│   "
+        #       sep += "    " if isLast else "│   "
 
-              lst =  list(child.getChildrens())
+        #       lst =  list(child.getChildrens())
 
-              last = lst[-1] if len(lst) != 0 else child
+        #       last = lst[-1] if len(lst) != 0 else child
 
-              for child2 in child.getChildrens():
-                 SyntaxNode.printResultAsTree(writer,child2,sep, last == child2)
+        #       for child2 in child.getChildrens():
+        #          SyntaxNode.printResultAsTree(writer,child2,sep, last == child2)
 
-        def __str__(self):
-           with StringIO() as writer:
-               self.WriteTo(writer)
-               return writer.getvalue()
+        # def __str__(self):
+        #    with StringIO() as writer:
+        #        self.WriteTo(writer)
+        #        return writer.getvalue()

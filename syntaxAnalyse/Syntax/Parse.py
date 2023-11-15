@@ -2,14 +2,16 @@
 
 # The `Parse` class is used for parsing and evaluating mathematical expressions.
 
-from copy import deepcopy
 from typing import Any
 from AssignmentExpressionSyntax import AssignmentExpressionSyntax
 from BinaryExpressionSyntax import BinaryExpressionSyntax
 from BlockStatementSyntax import BlockStatementSyntax
 from CompilationUnitSyntax import CompilationUnitSyntax
 from DiagnosticBag import DiagnosticBag
+from ElseClauseSyntax import ElseClauseSyntax
 from ExpressionStatementSyntax import ExpressionStatementSyntax
+from ForStatementSyntax import ForStatementSyntax
+from IfStatementSyntax import IfStatementSyntax
 from Lex import Lex
 from LiteralExpressionSyntax import LiteralExpressionSyntax
 from NameExpressionSyntax import NameExpressionSyntax
@@ -21,6 +23,7 @@ import SyntaxTree
 from Tokens import Tokens
 from UnrayExpressionSyntax import UnrayExpressionSyntax
 from VariableDeclarationSyntax import VariableDeclarationSyntax
+from WhileStatementSyntax import WhileStatementSyntax
 
 
 class Parse:
@@ -36,7 +39,7 @@ class Parse:
         self.__errors = DiagnosticBag()
         while True:
             token = lex.NextToken()
-            
+
             if token.getType() == Tokens.EndOfFileToken:
                 self.__listTokens.append(token)
                 break
@@ -72,54 +75,148 @@ class Parse:
 
     def getErrors(self) -> Any:
         return self.__errors
-
+    
+    def MatchTokenVar(self, type):
+        if self.current().getType() == type:
+            return self.NextTokenVar()
+    
     def MatchToken(self, type):
         if self.current().getType() == type:
             return self.NextToken()
         
         self.__errors.ReportUnexpectedToken(
             self.current().getSpan(), self.current().getType(), type)
+        
         # self.__errors.append("Error : Unexptected Token {type} expected {ty}".format(
         #     type=self.current().getType(), ty=type))
 
         return SyntaxToken(type, self.current().getPos(), "''", None)
     
     def ParseStatement(self):
+
+        print("type :",self.current().getType())
         if self.current().getType() == Tokens.OpenBraceToken :
             return self.ParseBlockStatement()
         if self.current().getType() == Tokens.VarKeyword or self.current().getType() == Tokens.ConstKeyword :
             return self.ParseVariableDeclaration()
+        if self.current().getType() == Tokens.IfKeyword: 
+            return self.ParseIfStatement()
+        if self.current().getType() == Tokens.WhileKeyword: 
+            return self.ParseWhileStatement() 
+        if self.current().getType() == Tokens.ForKeyword: 
+            return self.ParseForStatement() 
         return self.ParseExpressionStatement()
     
+    def ParseWhileStatement(self):
+        keyword = self.MatchToken(Tokens.WhileKeyword)
+        condition = self.ParseExpression()
+        doKeyword = self.MatchToken(Tokens.DoKeyword)
+        body = self.ParseStatement()
+        return WhileStatementSyntax(keyword,condition,doKeyword,body)
+    
+    def ParseForStatement(self):
+        forkeyword = self.MatchToken(Tokens.ForKeyword)
+        identifier = self.MatchToken(Tokens.IdentifierToken)
+        equalsToken = self.MatchToken(Tokens.EqualsToken)
+        lowerBound = self.ParseExpression()
+        tokeyword = self.MatchToken(Tokens.ToKeyword)
+        upperBound = self.ParseExpression()
+        body = self.ParseStatement()
+        return ForStatementSyntax(forkeyword,identifier,equalsToken,lowerBound,tokeyword,upperBound,body)
+
     def ParseVariableDeclaration(self):
+        VariableDeclarations= []
+        variablesPosition = []
+        print(self.current().getType())
         expected = Tokens.ConstKeyword if  self.current().getType() == Tokens.ConstKeyword else Tokens.VarKeyword
         keyword = self.MatchToken(expected)
         identifier = self.MatchToken(Tokens.IdentifierToken)
+        deletePos = self.__position
+        enterTest = False
+        while True :
+            if self.current().getType() == Tokens.CommaToken:
+                self.MatchToken(Tokens.CommaToken)
+                variablesPosition.append(self.__position)
+                VariableDeclarations.append(self.MatchToken(Tokens.IdentifierToken))
+                enterTest = True
+                print(self.current().getType())
+            else :
+                break
+        equalPos = self.__position
         equals = self.MatchToken(Tokens.EqualsToken)
         intializer = self.ParseExpression()
-        return VariableDeclarationSyntax(keyword,identifier,equals,intializer)
+        semiColonToken = self.MatchToken(Tokens.SemiColonToken)
+        
+        if enterTest :
+
+           for i in range(deletePos,equalPos) :
+            #    print("this is wrong",self.__listTokens[i].getText())
+               self.__listTokens[i] = SyntaxToken(Tokens.SpaceToken,i," ",None)
+            #    self.__position -=1
+
+           for item in VariableDeclarations :
+
+               for token in self.__listTokens[self.__position-1:equalPos-1:-1] :
+                   self.__listTokens.insert(self.__position,token)
+        
+               self.__listTokens.insert(self.__position,item)
+               self.__listTokens.insert(self.__position,keyword)
+
+
+            
+
+        
+            
+           
+
+        print(self.__position,len(self.__listTokens))
+
+
+        data = VariableDeclarationSyntax(keyword,identifier,equals,intializer,semiColonToken)
+        print(data)
+        return data
     
     def ParseExpressionStatement(self):
         expression = self.ParseExpression()
         return ExpressionStatementSyntax(expression)
 
     def ParseBlockStatement(self):
+
         statements = []
-        openBraceToken = self.MatchToken(Tokens.OpenBraceToken)
-        while self.current().getType() != Tokens.EndOfFileToken and self.current().getType() != Tokens.CloseBraceToken:
+        openBraceToken = self.MatchToken(Tokens.OpenBraceToken) 
+        while self.current().getType() != Tokens.EndOfFileToken and self.current().getType() != Tokens.CloseBraceToken   :
+            startToken = self.current() 
+
             statement = self.ParseStatement()
             statements.append(statement)
-        
+
+            if self.current() == startToken :
+                self.NextToken()
+            
         closeBraceToken = self.MatchToken(Tokens.CloseBraceToken)
 
         return BlockStatementSyntax(openBraceToken,statements,closeBraceToken)
     
-        
+    def ParseIfStatement(self):
+        keyword = self.MatchToken(Tokens.IfKeyword)
+        condition = self.ParseExpression()
+        thenKeyword = self.MatchToken(Tokens.ThenKeyword)
+        statement = self.ParseStatement()
+        elseClause = self.ParseElseClause()
+
+        return IfStatementSyntax(keyword,condition,thenKeyword,statement,elseClause)
+    
+    def ParseElseClause(self):
+        if self.current().getType() != Tokens.ElseKeyword :
+            return None
+        keyword = self.MatchToken(Tokens.ElseKeyword)
+        statement = self.ParseStatement()
+        return ElseClauseSyntax(keyword,statement)
 
     def ParseCompilationUnit(self):
         statement = self.ParseStatement()
-        endFileToken = self.MatchToken(Tokens.EndOfFileToken)
-        return CompilationUnitSyntax(statement, endFileToken)
+        endStatementToken = self.MatchToken(Tokens.EndOfFileToken)
+        return CompilationUnitSyntax(statement, endStatementToken)
     
 
     def ParseExpression(self):
@@ -130,9 +227,11 @@ class Parse:
             identifierToken = self.NextToken()
             operatorToken = self.NextToken()
             right = self.parseAssignmentExpression()
-            return AssignmentExpressionSyntax(identifierToken,operatorToken,right)
+            semiColonToken = self.MatchToken(Tokens.SemiColonToken)
+            return AssignmentExpressionSyntax(identifierToken,operatorToken,right,semiColonToken)
+        binaryExpression = self.ParseBinaryExpression()
         
-        return self.ParseBinaryExpression()
+        return binaryExpression
         # left = self.ParseBinaryExpression()
         # while self.current().getType() == Tokens.EqualsToken :
         #     operatorToken = self.NextToken()
@@ -163,10 +262,8 @@ class Parse:
 
             operatorToken = self.NextToken()
             right = self.ParseBinaryExpression(precedence)
-
-
             left = BinaryExpressionSyntax(left, operatorToken, right)
-
+        
         return left
 
     # def ParseTerm(self):
@@ -204,6 +301,7 @@ class Parse:
                 return self.ParseNameExpression()
             case _:
                 return self.ParseNameExpression()
+    
         # if self.current().getType() == Tokens.OpenParenthesisToken:
         #     left = self.NextToken()
         #     # I need some changes her

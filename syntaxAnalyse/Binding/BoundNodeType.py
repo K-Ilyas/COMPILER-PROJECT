@@ -10,4 +10,7 @@ class BoundNodeType(Enum):
     AssignmentExpression = auto(),
     BlockStatement = auto(),
     ExpressionStatement = auto(),
-    VariableDeclaration = auto()
+    VariableDeclaration = auto(),
+    IfStatement = auto(),
+    WhileStatement = auto(),
+    ForStatement = auto()

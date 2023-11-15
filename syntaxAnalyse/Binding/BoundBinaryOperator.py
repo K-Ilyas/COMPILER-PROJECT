@@ -50,6 +50,14 @@ class BoundBinaryOperator():
             BoundBinaryOperator(
                 Tokens.EqualsEqualsToken, BoundBinaryOperatorType.Equals, int, int, int, bool),
             BoundBinaryOperator(
+                Tokens.LessToken, BoundBinaryOperatorType.Less, int, int, int, bool),
+            BoundBinaryOperator(
+                Tokens.GreatToken, BoundBinaryOperatorType.Greater, int, int, int, bool),
+            BoundBinaryOperator(
+                Tokens.GreatOrEqualsToken, BoundBinaryOperatorType.GreaterOrEquals, int, int, int, bool),
+            BoundBinaryOperator(
+                Tokens.LessOrEqualsToken, BoundBinaryOperatorType.LessOrEquals, int, int, int, bool),
+            BoundBinaryOperator(
                 Tokens.BangEqualsToken, BoundBinaryOperatorType.NotEquals, int, int, int, bool),
             BoundBinaryOperator(
                 Tokens.AmpersandAmpersandToken, BoundBinaryOperatorType.LogicalAnd, bool),

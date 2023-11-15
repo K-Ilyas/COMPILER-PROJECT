@@ -12,5 +12,9 @@ class BoundBinaryOperatorType(Enum):
     LogicalAnd = auto(),
     LogicalOr = auto(),
     Equals = auto(),
-    NotEquals  = auto()
+    NotEquals  = auto(),
+    Less = auto(),
+    Greater = auto(),
+    LessOrEquals = auto(),
+    GreaterOrEquals = auto()
 

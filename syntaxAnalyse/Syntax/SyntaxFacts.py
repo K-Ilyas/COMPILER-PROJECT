@@ -19,7 +19,7 @@ class SynataxFacts():
                 return 5
             case Tokens.PlusToken | Tokens.MinusToken:
                 return 4
-            case Tokens.EqualsEqualsToken | Tokens.BangEqualsToken : 
+            case Tokens.EqualsEqualsToken | Tokens.BangEqualsToken | Tokens.LessToken | Tokens.GreatToken | Tokens.LessOrEqualsToken | Tokens.GreatOrEqualsToken : 
                 return 3
             case Tokens.AmpersandAmpersandToken :
                 return 2
@@ -38,6 +38,20 @@ class SynataxFacts():
                  return Tokens.ConstKeyword
             case "var":
                 return Tokens.VarKeyword
+            case "if":
+                return Tokens.IfKeyword
+            case "then":
+                return Tokens.ThenKeyword
+            case "else" : 
+                return Tokens.ElseKeyword
+            case "while":
+                return Tokens.WhileKeyword
+            case "for":
+                return Tokens.ForKeyword
+            case "do":
+                return Tokens.DoKeyword
+            case "to":
+                return Tokens.ToKeyword
             case _:
                 return Tokens.IdentifierToken
     @staticmethod
@@ -65,15 +79,23 @@ class SynataxFacts():
                 case Tokens.BangToken:
                     return "!"
                 case Tokens.EqualsToken:
-                    return "="
+                    return ":="
                 case Tokens.AmpersandAmpersandToken:
                     return "&&"
                 case Tokens.PipePipeToken:
                     return "||"
+                case Tokens.LessOrEqualsToken :
+                    return "<="
+                case Tokens.LessToken :
+                    return "<"
+                case Tokens.GreatToken :
+                    return ">"
+                case Tokens.LessOrEqualsToken:
+                    return ">="    
                 case Tokens.EqualsEqualsToken:
-                    return "=="
+                    return "="
                 case Tokens.BangEqualsToken:
-                    return "!="
+                    return "<>"
                 case Tokens.OpenParenthesisToken:
                     return "("
                 case Tokens.CloseParenthesisToken:
@@ -82,6 +104,8 @@ class SynataxFacts():
                     return "{"
                 case Tokens.CloseBraceToken:
                     return "}"
+                case Tokens.CommaToken :
+                    return ","
                 case Tokens.FalseKeyword:
                     return "false"
                 case Tokens.TrueKeyword:
@@ -90,7 +114,20 @@ class SynataxFacts():
                     return "var"
                 case Tokens.ConstKeyword :
                     return "const"
-                
+                case Tokens.IfKeyword :
+                    return "if"
+                case Tokens.ElseKeyword :
+                    return "else"
+                case Tokens.ThenKeyword :
+                    return "then"
+                case Tokens.WhileKeyword:
+                    return "while"
+                case Tokens.DoKeyword :
+                    return "do"
+                case Tokens.ForKeyword :
+                    return "for"
+                case Tokens.ToKeyword :
+                    return "to"
                 case _:
                     return None
         

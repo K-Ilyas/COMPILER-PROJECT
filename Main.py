@@ -29,6 +29,46 @@ from  SyntaxTree import SyntaxTree
 pyCode = ""
 variables = dict()
 
+
+def initCompiler(output_file):
+    with open(output_file,"w") as out:
+        out.write("#include <stdio.h>\n")
+        out.write("#include <stlib.h>\n")
+        out.write("int main(){\n")
+
+def endCompiler(output_file):
+    with open(output_file,"a") as out:
+        out.write("}\n")
+
+def compile(child, output_file):
+    global pyCode
+    if isinstance(child,SyntaxToken) :
+        with open(output_file,"a") as out:
+            match child.getType() :
+                case Tokens.BlockStatement:
+                    out.write("\n")
+                case Tokens.OpenBraceToken :
+                    out.write("{")
+                case Tokens.VarKeyword :
+                    out.write("int ")
+                case Tokens.IdentifierToken:
+                    out.write(str(child.getText()))
+                case Tokens.EqualsToken:
+                    out.write("=")
+                case Tokens.NumberToken:
+                    out.write(str(child.getValue()))
+                case Tokens.TrueKeyword:
+                    out.write("1")
+                case Tokens.FalseKeyword:
+                    out.write("0")
+                case Tokens.CloseBraceToken :
+                    out.write("}")
+                # case :
+                #     pyCode+=" "+child.getText() + " "
+
+    for child2 in child.getChildrens():
+        compile(child2, output_file)
+
 def printCode(child):
 
     global pyCode
@@ -130,16 +170,25 @@ while True :
 
                                print("")
 
-       else :
+       else :     
+        #    syntaxTree.getRoot().WriteTo(print)
            print(result.getValue())
-           syntaxTree.getRoot().WriteTo(print)
            previous = compiltaion
 
     
-    #    if result.getDiagnostics() == [] :
-    #            printCode(syntaxTree.getRoot())
-    #            pyFile = open("pyCode.py","w")
-    #            pyFile.write("print("+pyCode+")")
-      
+       if result.getDiagnostics() == [] :
+               initCompiler("cCode.c")               
+               compile(syntaxTree.getRoot(),"cCode.c")
+               endCompiler("cCode.c")
 
-#  print(pyCode)
+   # variableDeclaration.append(self.MatchToken(Tokens.IdentifierToken))
+        # while True :
+        #     if self.current().getType() == Tokens.CommaToken:
+        #         self.MatchToken(Tokens.CommaToken)
+        #         variableDeclaration.append(self.MatchToken(Tokens.IdentifierToken))
+        #         print(self.current().getType())
+        #     else :
+        #         break
+
+        # for item in variableDeclaration :
+        #     print(item.getText())

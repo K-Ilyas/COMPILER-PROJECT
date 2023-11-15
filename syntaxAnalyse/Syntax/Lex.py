@@ -79,7 +79,9 @@ class Lex:
                 case '/':
                     self.__type= Tokens.SlashToken
                     self.incPos()
-                    
+                case ",":
+                    self.__type= Tokens.CommaToken
+                    self.incPos()    
                 case '(':
                     self.__type= Tokens.OpenParenthesisToken
                     self.incPos()
@@ -94,35 +96,68 @@ class Lex:
                 case '}':
                     self.__type= Tokens.CloseBraceToken
                     self.incPos()
+
+                case ';':
+                    self.__type= Tokens.SemiColonToken
+                    self.incPos()
+                
                 case '&':
                     if  self.lookahead() == '&':
                     
                         self.__type= Tokens.AmpersandAmpersandToken
                         self.__position += 2
-                    
+                
+                case "!":
+                    self.__type= Tokens.BangToken
+                    self.incPos()
+               
+
                 case '|':
                     if self.lookahead()  == '|' :
                     
                         self.__type= Tokens.PipePipeToken
                         self.__position += 2
-                    
-                case '=':
-                    self.incPos()
-                    if self.current() != '=' :
+            
+                case ':':
+                    if self.lookahead() == '=' :
                         self.__type= Tokens.EqualsToken
-                    else :
-                        self.incPos()
+                        self.__position += 2
+
+                
+                case '=':
                         self.__type= Tokens.EqualsEqualsToken
-                    
-                    
-                case '!':
-                    self.incPos()
-                    if self.current() != '=' : 
-                        self.__type= Tokens.BangToken
-                    else :
-                    
-                        self.__type= Tokens.BangEqualsToken
                         self.incPos()
+                
+                
+                case '<':
+                    if self.lookahead() == '>' : 
+                        self.__type= Tokens.BangEqualsToken
+                        self.__position += 2
+                    elif self.lookahead() == '=':
+                        self.__type= Tokens.LessOrEqualsToken
+                        self.__position += 2 
+                    else :
+                        self.__type= Tokens.LessToken
+                        self.incPos()
+        
+                case '>':
+                    if self.lookahead() == '=':
+                        self.__type= Tokens.GreatOrEqualsToken
+                        self.__position += 2 
+                    else :
+                        self.__type= Tokens.GreatToken
+                        self.incPos()
+                
+                case '<':
+                    if self.lookahead() == '>' : 
+                        self.__type= Tokens.BangEqualsToken
+                        self.__position += 2
+                    elif self.lookahead() == '=':
+                        self.__type= Tokens.LessOrEqualsToken
+                        self.__position += 2 
+                    else :
+                        self.__type= Tokens.LessToken
+                        self.incPos()    
                  
                 case '0' | '1' | '2' | '3' | '4' | '5' |'6' | '7' | '8' | '9':
                 

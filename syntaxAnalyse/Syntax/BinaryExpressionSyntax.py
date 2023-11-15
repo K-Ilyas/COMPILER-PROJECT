@@ -12,6 +12,9 @@ class BinaryExpressionSyntax(ExpressionSyntax):
             self.left = left
             self.operatorToken = operatorToken 
             self.right = right
+            # self.semiColonToken = semiColonToken
+
+
         
         def getLeft(self):
             return self.left
@@ -21,7 +24,9 @@ class BinaryExpressionSyntax(ExpressionSyntax):
           
         def getRight(self):
             return self.right
-
+        
+        # def getSemiColonToken(self):
+        #      return self.semiColonToken
         
         def getType(self):
              return Tokens.BinaryExpression

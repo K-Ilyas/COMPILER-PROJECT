@@ -2,9 +2,12 @@
 from Binding.BoundAssignmentExpression import BoundAssignmentExpression
 from Binding.BoundBlockStatement import BoundBlockStatement
 from Binding.BoundExpressionStatement import BoundExpressionStatement
+from Binding.BoundForStatement import BoundForStatement
+from Binding.BoundIfStatement import BoundIfStatement
 from Binding.BoundNodeType import BoundNodeType
 from Binding.BoundVariableDeclaration import BoundVariableDeclaration
 from Binding.BoundVariableExpression import BoundVariableExpression
+from Binding.BoundWhileStatement import BoundWhileStatement
 from UnrayExpressionSyntax import UnrayExpressionSyntax
 from Tokens import Tokens
 from ParenthesizedExpressionSyntax import ParenthesizedExpressionSyntax
@@ -44,6 +47,7 @@ class Evaluator:
     
 
     def EvaluateStatement(self, node):
+     print(node)
      match node.getType():
         case BoundNodeType.BlockStatement:
             node.__class__ = BoundBlockStatement
@@ -54,6 +58,15 @@ class Evaluator:
         case BoundNodeType.ExpressionStatement:
             node.__class__ = BoundExpressionStatement
             self.EvaluteExpressionStatement(node)
+        case BoundNodeType.IfStatement:
+            node.__class__ = BoundIfStatement
+            return self.EvaluateIfStatement(node)
+        case BoundNodeType.WhileStatement:
+            node.__class__ = BoundWhileStatement
+            return self.EvaluateWhileStatement(node)
+        case BoundNodeType.ForStatement:
+            node.__class__ = BoundForStatement
+            return self.EvaluateForStatement(node)
         case _:        
           raise Exception("Unexpected node {node}".format(node=node.getType()))
     
@@ -67,6 +80,7 @@ class Evaluator:
         self._lastValue = value
     def EvaluteExpressionStatement(self,node):
         self._lastValue = self.ExpressionResult(node.getExpression())
+    
     def ExpressionResult(self, r):
         
      match r.getType():
@@ -82,7 +96,8 @@ class Evaluator:
         case BoundNodeType.AssignmentExpression:
             r.__class__ = BoundAssignmentExpression
             return self.EvaluateAssignmentExpression(r)
-
+       
+         
         case BoundNodeType.UnrayExpression:
             r.__class__ = BoundUnrayExpression
             return self.EvaluateUnaryExpression(r)
@@ -92,8 +107,27 @@ class Evaluator:
             return self.EvaluateBinaryExpression(r)
         case _:        
           raise Exception("Unexpected node {node}".format(node=r.getType()))
+    
+    def EvaluateIfStatement(self,node):
+        condition = bool(self.ExpressionResult(node.getCondition()))
+        if condition == True :
+            self.EvaluateStatement(node.getStatement())
+        else :
+            self.EvaluateStatement(node.getElseStatement())
 
+    def EvaluateWhileStatement(self,node):
+        while self.ExpressionResult(node.getCondition()):
+            self.EvaluateStatement(node.getBody())
+        
+    def EvaluateForStatement(self,node):
+        lowerBound = self.ExpressionResult(node.getLowerBound())
+        upperBound = self.ExpressionResult(node.getUpperBound())
 
+        for i in range(lowerBound,upperBound+1):
+          self._variables[node.getVariable()] = i
+          self.EvaluateStatement(node.getBody())
+
+        
 
     def EvaluateLiteralExpression(self,a):
             return a.getValue()
@@ -141,6 +175,14 @@ class Evaluator:
                     return left == right
                 case  BoundBinaryOperatorType.NotEquals:
                     return left != right
+                case  BoundBinaryOperatorType.Less:
+                    return left < right 
+                case  BoundBinaryOperatorType.Greater:
+                    return left > right
+                case  BoundBinaryOperatorType.GreaterOrEquals:
+                    return left >= right
+                case  BoundBinaryOperatorType.LessOrEquals:
+                    return left <= right
                 case _:
                     raise Exception(
                         "Unexpected Binary operator {token}".format(token=b.getOp()))
