@@ -89,8 +89,9 @@ class Lex:
                 case ')':
                     self.__type= Tokens.CloseParenthesisToken
                     self.incPos()
-
-
+                case '"':
+                    self.__type= Tokens.DoubleQuteToken
+                    self.incPos()
                 case ';':
                     self.__type= Tokens.SemiColonToken
                     self.incPos()

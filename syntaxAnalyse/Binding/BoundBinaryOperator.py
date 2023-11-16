@@ -41,12 +41,14 @@ class BoundBinaryOperator():
             BoundBinaryOperator(
                 Tokens.PlusToken, BoundBinaryOperatorType.Addition, int),
             BoundBinaryOperator(
+                Tokens.PlusToken, BoundBinaryOperatorType.StringConcatenation, str),
+            BoundBinaryOperator(
                 Tokens.MinusToken, BoundBinaryOperatorType.Substraction, int),
             BoundBinaryOperator(
                 Tokens.SlashToken, BoundBinaryOperatorType.Division, int),
             BoundBinaryOperator(
                 Tokens.StarToken, BoundBinaryOperatorType.Multiplication, int),
-
+            
             BoundBinaryOperator(
                 Tokens.EqualsEqualsToken, BoundBinaryOperatorType.Equals, int, int, int, bool),
             BoundBinaryOperator(

@@ -37,7 +37,7 @@ class BoundUnrayOperator():
                 Tokens.PlusToken, BoundUnrayOperatorType.Identity, int),
             BoundUnrayOperator(
                 Tokens.MinusToken, BoundUnrayOperatorType.Negation, int),
-
+            
         ]
     
     @staticmethod

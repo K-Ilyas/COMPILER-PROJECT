@@ -8,11 +8,10 @@ class BoundUnrayExpression(BoundExpression):
     def __init__(self,op,operand) -> None:
          self.op = op
          self.operand = operand
-
     
     def getType(self):
          return BoundNodeType.UnrayExpression   
-
+    
     def getOp(self):
          return self.op
     

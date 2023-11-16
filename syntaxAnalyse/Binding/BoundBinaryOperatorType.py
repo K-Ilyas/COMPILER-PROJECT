@@ -16,5 +16,6 @@ class BoundBinaryOperatorType(Enum):
     Less = auto(),
     Greater = auto(),
     LessOrEquals = auto(),
-    GreaterOrEquals = auto()
+    GreaterOrEquals = auto(),
+    StringConcatenation = auto(),
 

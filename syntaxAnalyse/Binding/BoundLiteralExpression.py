@@ -15,7 +15,7 @@ class BoundLiteralExpression(BoundExpression):
         return self.value
     
     def type(self):
-        return  self.value.type() if type(self.value) != int and type(self.value) != bool  else type(self.value) 
+        return  self.value.type() if type(self.value) != int and type(self.value) != bool and type(self.value) != str else type(self.value) 
     
     def getType(self):
         return BoundNodeType.LiteralExpression

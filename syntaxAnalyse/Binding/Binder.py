@@ -18,6 +18,9 @@ import sys
 from Binding.BoundVariableDeclaration import BoundVariableDeclaration
 from Binding.BoundVariableExpression import BoundVariableExpression
 from Binding.BoundWhileStatement import BoundWhileStatement
+from Binding.BoundWriteFunction import BoundWriteFunction
+
+
 
 
 
@@ -46,6 +49,7 @@ from IfStatementSyntax import IfStatementSyntax
 from WhileStatementSyntax import WhileStatementSyntax
 from ForStatementSyntax import ForStatementSyntax
 from GlobalScopeSyntax import GlobalScopeSyntax
+from WriteFunctionSyntax import WriteFunctionSyntax
 
 class Binder():
 
@@ -112,6 +116,9 @@ class Binder():
             case Tokens.ExpressionStatement :
                 syntax.__class__ = ExpressionStatementSyntax
                 return self.BindExpressionStatement(syntax)
+            case Tokens.WriteFunction :
+                syntax.__class__ = WriteFunctionSyntax
+                return self.BindWriteFunction(syntax)
             case _:
                 raise Exception(
                     "Unexpected syntax {}".format(syntax.getType()))
@@ -163,14 +170,17 @@ class Binder():
     
     def BindWhileStatement(self,syntax):
         condition = self.BindExpressionIf(syntax.getCondition(),bool)
-        print("wow",condition.getType())
         body = self.BindStatement(syntax.getBody())
-        print("before",body.getType())
 
-        new_var = BoundWhileStatement(condition,body)
-        print("wow",new_var.getBody().getType())
+        return BoundWhileStatement(condition,body)
+    
+    def BindWriteFunction(self,syntax):
+        listOfExpression = []
+        for expression in syntax.getPrimaryExpressions() :
+            listOfExpression.append(self.BindExpression(expression))
 
-        return new_var
+        return BoundWriteFunction(listOfExpression)
+   
     def BindForStatement(self,syntax):
         lowerBound = self.BindExpressionIf(syntax.getLowerBound(),int)
         upperBound = self.BindExpressionIf(syntax.getUpperBound(),int)

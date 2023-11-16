@@ -52,6 +52,8 @@ class SynataxFacts():
                 return Tokens.DoKeyword
             case "to":
                 return Tokens.ToKeyword
+            case "write":
+                return Tokens.WriteKeyword
             case "begin":
                 return Tokens.OpenBraceToken
             case "end":
@@ -84,6 +86,8 @@ class SynataxFacts():
                     return "!"
                 case Tokens.EqualsToken:
                     return ":="
+                case Tokens.DoubleQuteToken :
+                    return '"'
                 case Tokens.AmpersandAmpersandToken:
                     return "&&"
                 case Tokens.PipePipeToken:
@@ -132,6 +136,10 @@ class SynataxFacts():
                     return "for"
                 case Tokens.ToKeyword :
                     return "to"
+                case Tokens.StringToken :
+                    return "String"
+                case Tokens.WriteKeyword :
+                    return "write"
                 case _:
                     return None
         

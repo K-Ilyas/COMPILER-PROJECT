@@ -9,6 +9,7 @@ from Binding.BoundNodeType import BoundNodeType
 from Binding.BoundVariableDeclaration import BoundVariableDeclaration
 from Binding.BoundVariableExpression import BoundVariableExpression
 from Binding.BoundWhileStatement import BoundWhileStatement
+from Binding.BoundWriteFunction import BoundWriteFunction
 from UnrayExpressionSyntax import UnrayExpressionSyntax
 from Tokens import Tokens
 from ParenthesizedExpressionSyntax import ParenthesizedExpressionSyntax
@@ -46,7 +47,6 @@ class Evaluator:
         self.EvaluateStatement(self.__root)
         return self._lastValue
     
-
     def EvaluateStatement(self, node):
      match node.getType():
         case BoundNodeType.GlobalScope :
@@ -67,6 +67,9 @@ class Evaluator:
         case BoundNodeType.WhileStatement:
             node.__class__ = BoundWhileStatement
             return self.EvaluateWhileStatement(node)
+        case BoundNodeType.WriteFunction:
+            node.__class__ = BoundWriteFunction
+            return self.EvaluateWriteFunction(node)
         case BoundNodeType.ForStatement:
             node.__class__ = BoundForStatement
             return self.EvaluateForStatement(node)
@@ -95,7 +98,6 @@ class Evaluator:
             r.__class__ = BoundVariableExpression
             return self.EvaluateVariableExpression(r)
         
-            
         case BoundNodeType.AssignmentExpression:
             r.__class__ = BoundAssignmentExpression
             return self.EvaluateAssignmentExpression(r)
@@ -120,9 +122,19 @@ class Evaluator:
              self.EvaluateStatement(node.getElseStatement())
 
     def EvaluateWhileStatement(self,node):
+       
+        print(type(node))
+
         while self.ExpressionResult(node.getCondition()):
             self.EvaluateStatement(node.getBody())
         
+    
+    def EvaluateWriteFunction(self,node):
+        print(type(node))
+        for item in node.getPrimaryExpressions():
+            print(type(item))
+            print(self.ExpressionResult(item))
+
     def EvaluateForStatement(self,node):
         lowerBound = self.ExpressionResult(node.getLowerBound())
         upperBound = self.ExpressionResult(node.getUpperBound())
@@ -130,8 +142,6 @@ class Evaluator:
         for i in range(lowerBound,upperBound+1):
           self._variables[node.getVariable()] = i
           self.EvaluateStatement(node.getBody())
-
-        
 
     def EvaluateLiteralExpression(self,a):
             return a.getValue()
@@ -165,12 +175,15 @@ class Evaluator:
                     return int(left) + int(right)
                 case BoundBinaryOperatorType.Substraction:
                     return int(left) - int(right)
+    
                 case BoundBinaryOperatorType.Multiplication:
                     return int(left) * int(right)
                 case BoundBinaryOperatorType.Division:
                     if int(right) == 0 or int(left) == 0:
                         raise Exception("Cannot devide by 0")
                     return int(left) / int(right)
+                case BoundBinaryOperatorType.StringConcatenation :
+                    return  str(left) +  str(right)
                 case BoundBinaryOperatorType.LogicalAnd:                 
                     return bool(left) and bool(right)
                 case BoundBinaryOperatorType.LogicalOr:

@@ -4,6 +4,7 @@ from enum import Enum, auto
 
 class Tokens(Enum):
     NumberToken = auto(),
+    DoubleQuteToken = auto(),
     SpaceToken = auto(),
     PlusToken = auto(),
     MinusToken = auto(),
@@ -53,4 +54,7 @@ class Tokens(Enum):
     ForKeyword = auto(),
     DoKeyword = auto(),
     ToKeyword = auto(),
-    GlobalScope = auto()
+    GlobalScope = auto(),
+    StringToken = auto(),
+    WriteKeyword = auto(),
+    WriteFunction = auto()
