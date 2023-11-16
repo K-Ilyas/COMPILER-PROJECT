@@ -2,7 +2,9 @@
     "python.analysis.extraPaths": [
         "./syntaxAnalyse",
         "./syntaxAnalyse/Syntax",
-        "./syntaxAnalyse/Text"
+        "./syntaxAnalyse/Text",
+        "./syntaxAnalyse/Syntax",
+        "./syntaxAnalyse/Syntax"
     ],
     "[python]": {
         "editor.defaultFormatter": "ms-python.autopep8"

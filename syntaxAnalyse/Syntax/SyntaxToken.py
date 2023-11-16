@@ -23,10 +23,7 @@ class SyntaxToken(SyntaxNode):
         return self.value
     
     def getPos(self):
-        return self.pos
-    
-    # def getChildrens(self):
-    #         return []     
+        return self.pos 
     
     def getSpan(self):
          return TextSpan(self.pos, 0 if self.txt is None else len(self.txt))

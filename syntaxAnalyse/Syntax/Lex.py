@@ -90,12 +90,6 @@ class Lex:
                     self.__type= Tokens.CloseParenthesisToken
                     self.incPos()
 
-                case '{':
-                    self.__type= Tokens.OpenBraceToken
-                    self.incPos()
-                case '}':
-                    self.__type= Tokens.CloseBraceToken
-                    self.incPos()
 
                 case ';':
                     self.__type= Tokens.SemiColonToken
@@ -315,7 +309,7 @@ class Lex:
         try:
                 pack("I", int(txt))
         except error:
-                self.__errors.ReportInvalidInt32(TextSpan(self.__start,self.__start-self.__position-self.__start,txt,int))
+                self.__errors.ReportInvalidInt32(TextSpan(self.__start,self.__position-self.__start),txt,int)
                
         self.__value = literal_eval(txt) 
         self.__type = Tokens.NumberToken

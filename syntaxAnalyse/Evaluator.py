@@ -3,6 +3,7 @@ from Binding.BoundAssignmentExpression import BoundAssignmentExpression
 from Binding.BoundBlockStatement import BoundBlockStatement
 from Binding.BoundExpressionStatement import BoundExpressionStatement
 from Binding.BoundForStatement import BoundForStatement
+from Binding.BoundGlobalScope import BoundGlobalScope
 from Binding.BoundIfStatement import BoundIfStatement
 from Binding.BoundNodeType import BoundNodeType
 from Binding.BoundVariableDeclaration import BoundVariableDeclaration
@@ -47,9 +48,11 @@ class Evaluator:
     
 
     def EvaluateStatement(self, node):
-     print(node)
      match node.getType():
-        case BoundNodeType.BlockStatement:
+        case BoundNodeType.GlobalScope :
+            node.__class__ = BoundGlobalScope
+            self.EvaluteBlockStatement(node)
+        case BoundNodeType.BlockStatement  :
             node.__class__ = BoundBlockStatement
             self.EvaluteBlockStatement(node)
         case BoundNodeType.VariableDeclaration:
@@ -113,7 +116,8 @@ class Evaluator:
         if condition == True :
             self.EvaluateStatement(node.getStatement())
         else :
-            self.EvaluateStatement(node.getElseStatement())
+            if node.getElseStatement() != None :
+             self.EvaluateStatement(node.getElseStatement())
 
     def EvaluateWhileStatement(self,node):
         while self.ExpressionResult(node.getCondition()):

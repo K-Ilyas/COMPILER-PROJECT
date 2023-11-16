@@ -13,4 +13,5 @@ class BoundNodeType(Enum):
     VariableDeclaration = auto(),
     IfStatement = auto(),
     WhileStatement = auto(),
-    ForStatement = auto()
+    ForStatement = auto(),
+    GlobalScope = auto()

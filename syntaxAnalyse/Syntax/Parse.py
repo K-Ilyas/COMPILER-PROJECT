@@ -11,6 +11,7 @@ from DiagnosticBag import DiagnosticBag
 from ElseClauseSyntax import ElseClauseSyntax
 from ExpressionStatementSyntax import ExpressionStatementSyntax
 from ForStatementSyntax import ForStatementSyntax
+from GlobalScopeSyntax import GlobalScopeSyntax
 from IfStatementSyntax import IfStatementSyntax
 from Lex import Lex
 from LiteralExpressionSyntax import LiteralExpressionSyntax
@@ -182,6 +183,22 @@ class Parse:
 
         return BlockStatementSyntax(openBraceToken,statements,closeBraceToken)
     
+    
+    def ParseGloablScope(self):
+
+        if self.current().getType() == Tokens.OpenBraceToken :
+            return self.ParseStatement() 
+        statements = []
+        while self.current().getType() != Tokens.EndOfFileToken   :
+           startToken = self.current() 
+
+           statement = self.ParseStatement()
+           statements.append(statement)
+           if self.current() == startToken and self.current().getType() != Tokens.VarKeyword and self.current().getType() != Tokens.ConstKeyword  :
+                self.NextToken()
+
+        return GlobalScopeSyntax(statements)
+    
     def ParseIfStatement(self):
         keyword = self.MatchToken(Tokens.IfKeyword)
         condition = self.ParseExpression()
@@ -199,7 +216,7 @@ class Parse:
         return ElseClauseSyntax(keyword,statement)
 
     def ParseCompilationUnit(self):
-        statement = self.ParseStatement()
+        statement = self.ParseGloablScope()
         endStatementToken = self.MatchToken(Tokens.EndOfFileToken)
         return CompilationUnitSyntax(statement, endStatementToken)
     

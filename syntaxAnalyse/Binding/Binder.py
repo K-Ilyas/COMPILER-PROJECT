@@ -6,6 +6,7 @@ from Binding.BoundBinaryOperatorType import BoundBinaryOperatorType
 from Binding.BoundBlockStatement import BoundBlockStatement
 from Binding.BoundExpressionStatement import BoundExpressionStatement
 from Binding.BoundForStatement import BoundForStatement
+from Binding.BoundGloablStatement import BoundGloablStatement
 from Binding.BoundGlobalScope import BoundGlobalScope
 from Binding.BoundIfStatement import BoundIfStatement
 from Binding.BoundLiteralExpression import BoundLiteralExpression
@@ -18,7 +19,9 @@ from Binding.BoundVariableDeclaration import BoundVariableDeclaration
 from Binding.BoundVariableExpression import BoundVariableExpression
 from Binding.BoundWhileStatement import BoundWhileStatement
 
-import types
+
+
+
 
 
 
@@ -42,6 +45,7 @@ from VariableDeclarationSyntax import VariableDeclarationSyntax
 from IfStatementSyntax import IfStatementSyntax
 from WhileStatementSyntax import WhileStatementSyntax
 from ForStatementSyntax import ForStatementSyntax
+from GlobalScopeSyntax import GlobalScopeSyntax
 
 class Binder():
 
@@ -88,14 +92,7 @@ class Binder():
     
 
     def BindStatement(self, syntax):
-
-        if  isinstance(syntax, types.GeneratorType) :
-            for item in syntax :
-                item.__class__ = VariableDeclarationSyntax
-                print(item.getType())
-                self.BindStatement(item)
-        else :
-
+         
          match(syntax.getType()):  
             case Tokens.BlockStatement :
                 syntax.__class__ = BlockStatementSyntax
@@ -128,6 +125,16 @@ class Binder():
             statements.append(statement)
         self._scope = self._scope.getParent()
         return BoundBlockStatement(statements)
+    
+    def BindGlobalStatement(self,syntax):
+        statements = [] 
+        self._scope = BoundScope(self._scope)
+        for statementSyntax in syntax.getStatements() :
+            statement = self.BindStatement(statementSyntax)
+            statements.append(statement)
+        self._scope = self._scope.getParent()
+        return  BoundGloablStatement(statements)
+    
     
     def BindVariableDeclaration(self,syntax):
            
@@ -244,7 +251,6 @@ class Binder():
        boundExpression = self.BindExpression(syntax.getExpression())
 
        exist = self._scope.tryLookUp(name)
-       print(name)
        if not exist[0]:
             self._diagnostics.ReportUndefinedName(syntax.getIdentifierToken().getSpan(),name)
             return boundExpression

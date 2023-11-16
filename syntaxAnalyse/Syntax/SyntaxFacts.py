@@ -52,6 +52,10 @@ class SynataxFacts():
                 return Tokens.DoKeyword
             case "to":
                 return Tokens.ToKeyword
+            case "begin":
+                return Tokens.OpenBraceToken
+            case "end":
+                return Tokens.CloseBraceToken
             case _:
                 return Tokens.IdentifierToken
     @staticmethod
@@ -101,9 +105,9 @@ class SynataxFacts():
                 case Tokens.CloseParenthesisToken:
                     return ")"
                 case Tokens.OpenBraceToken:
-                    return "{"
+                    return "begin"
                 case Tokens.CloseBraceToken:
-                    return "}"
+                    return "end"
                 case Tokens.CommaToken :
                     return ","
                 case Tokens.FalseKeyword:

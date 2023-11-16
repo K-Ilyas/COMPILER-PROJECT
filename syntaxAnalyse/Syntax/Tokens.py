@@ -52,4 +52,5 @@ class Tokens(Enum):
     ForStatement = auto(),
     ForKeyword = auto(),
     DoKeyword = auto(),
-    ToKeyword = auto()
+    ToKeyword = auto(),
+    GlobalScope = auto()
