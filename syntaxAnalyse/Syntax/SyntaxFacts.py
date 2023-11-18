@@ -4,7 +4,7 @@ from Tokens import Tokens
 
 
 class SynataxFacts():
-    
+
     @staticmethod
     def getUnrayOperatorPrecedence(type):
         match type :
@@ -12,6 +12,7 @@ class SynataxFacts():
                 return 6
             case _:
                 return 0
+    
     @staticmethod
     def getBinayOperatorPrecedence(type):
         match type :
@@ -30,6 +31,8 @@ class SynataxFacts():
     @staticmethod
     def getKeywordType(txt):
         match txt :
+            case "program":
+                return Tokens.ProgramToken
             case "true":
                  return Tokens.TrueKeyword
             case "false":
@@ -54,6 +57,8 @@ class SynataxFacts():
                 return Tokens.ToKeyword
             case "write":
                 return Tokens.WriteKeyword
+            case "read":
+                return Tokens.ReadKeyword
             case "begin":
                 return Tokens.OpenBraceToken
             case "end":
@@ -73,7 +78,8 @@ class SynataxFacts():
     @staticmethod
     def GetText( type) :
             match (type):
-            
+                case Tokens.ProgramToken :
+                    return "program"
                 case Tokens.PlusToken:
                     return "+"
                 case Tokens.MinusToken:
@@ -84,6 +90,8 @@ class SynataxFacts():
                     return "/"
                 case Tokens.BangToken:
                     return "!"
+                case Tokens.AntiSlashToken :
+                    return '\n'
                 case Tokens.EqualsToken:
                     return ":="
                 case Tokens.DoubleQuteToken :
@@ -140,6 +148,9 @@ class SynataxFacts():
                     return "String"
                 case Tokens.WriteKeyword :
                     return "write"
+                case Tokens.ReadKeyword :
+                    return "read"
+                
                 case _:
                     return None
         

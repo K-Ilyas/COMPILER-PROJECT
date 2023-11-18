@@ -17,6 +17,7 @@ from Lex import Lex
 from LiteralExpressionSyntax import LiteralExpressionSyntax
 from NameExpressionSyntax import NameExpressionSyntax
 from ParenthesizedExpressionSyntax import ParenthesizedExpressionSyntax
+from ReadFunctionSyntax import ReadFunctionSyntax
 from SourceText import SourceText
 from SyntaxFacts import SynataxFacts
 from SyntaxToken import SyntaxToken
@@ -49,15 +50,13 @@ class Parse:
             if token.getType() == Tokens.DoubleQuteToken :
                 isString = not isString
 
-
-            if  (not isString) and  token.getType() != Tokens.BadToken and token.getType() != Tokens.SpaceToken:
+            if  (not isString) and  token.getType() != Tokens.BadToken and token.getType() != Tokens.CommentToken and token.getType() != Tokens.SpaceToken:
                 self.__listTokens.append(token)
-
             else :
-                if token.getType() != Tokens.BadToken and isString :
+                if token.getType() != Tokens.BadToken and token.getType() != Tokens.CommentToken  and isString :
                     self.__listTokens.append(token)
-        for item in self.__listTokens:
-            print(item.getType())
+        # for item in self.__listTokens:
+        #     print(item.getType())
         self.__errors.AddErrors(lex.getErrors())
         # self.__errors =  deepcopy(lex.getErrors())
 
@@ -117,6 +116,8 @@ class Parse:
             return self.ParseForStatement() 
         if self.current().getType() == Tokens.WriteKeyword :
             return self.ParseWriteFunction()
+        if self.current().getType() == Tokens.ReadKeyword :
+            return self.ParseReadFunction()
         return self.ParseExpressionStatement()
     
     def ParseWhileStatement(self):
@@ -144,6 +145,11 @@ class Parse:
             semiColonToken = self.MatchToken(Tokens.SemiColonToken)
             return WriteFunctionSyntax(writekeyword,primaryExpressions[0],primaryExpressions[1],primaryExpressions[2],semiColonToken)
 
+    def ParseReadFunction(self):
+            readKeyword = self.MatchToken(Tokens.ReadKeyword)
+            assignmentExpressions = self.ParseBlockAssignments()
+            semiColonToken = self.MatchToken(Tokens.SemiColonToken)
+            return ReadFunctionSyntax(readKeyword,assignmentExpressions[0],assignmentExpressions[1],assignmentExpressions[2],semiColonToken)
 
 
     def ParseVariableDeclaration(self):
@@ -163,9 +169,19 @@ class Parse:
             else :
                 break
         equalPos = self.__position
-        equals = self.MatchToken(Tokens.EqualsToken)
-        intializer = self.ParseExpression()
-        semiColonToken = self.MatchToken(Tokens.SemiColonToken)
+        
+        equals = None
+        intializer = None
+        semiColonToken = None
+
+        if self.current().getType() == Tokens.SemiColonToken :
+            equals = None
+            intializer = LiteralExpressionSyntax(SyntaxToken(Tokens.NumberToken,0,"",0))
+            semiColonToken = self.MatchToken(Tokens.SemiColonToken)
+        else :
+          equals = self.MatchToken(Tokens.EqualsToken)
+          intializer = self.ParseExpression()
+          semiColonToken = self.MatchToken(Tokens.SemiColonToken)
         
         if enterTest :
 
@@ -200,16 +216,27 @@ class Parse:
                 self.NextToken()
         closeParenthesisToken = self.MatchToken(Tokens.CloseParenthesisToken)
         return (openParenthesisToken,statements,closeParenthesisToken)
+    
+    def ParseBlockAssignments(self):
+        openParenthesisToken  = self.MatchToken(Tokens.OpenParenthesisToken)
+        statements = [] 
 
+        while self.current().getType() != Tokens.EndOfFileToken and self.current().getType() != Tokens.CloseParenthesisToken  and self.current().getType() != Tokens.CommaToken:
+            statement = self.ParseNameExpression()
+            statements.append(statement)
+            if self.current().getType() == Tokens.CommaToken :
+                self.NextToken()
+        closeParenthesisToken = self.MatchToken(Tokens.CloseParenthesisToken)
+        return (openParenthesisToken,statements,closeParenthesisToken)
+    
     def ParseBlockStatement(self):
         statements = []
         openBraceToken = self.MatchToken(Tokens.OpenBraceToken) 
         while self.current().getType() != Tokens.EndOfFileToken and self.current().getType() != Tokens.CloseBraceToken   :
             startToken = self.current() 
-            statement = self.parseAssignmentExpression()
+            statement = self.ParseStatement()
             statements.append(statement)
-            if self.current() == startToken and self.current().getType() != Tokens.VarKeyword and self.current().getType() != Tokens.ConstKeyword  :
-                self.NextToken()
+            
         closeBraceToken = self.MatchToken(Tokens.CloseBraceToken)
         return BlockStatementSyntax(openBraceToken,statements,closeBraceToken)
 
@@ -246,10 +273,19 @@ class Parse:
         return ElseClauseSyntax(keyword,statement)
 
     def ParseCompilationUnit(self):
+        programToken = self.MatchToken(Tokens.ProgramToken)
+        startIndex = self.__position
+        value = ""
+        while self.current().getType() != Tokens.SemiColonToken and self.current().getType() == Tokens.IdentifierToken:
+            value += self.NextToken().getText()
+        
+        programNameToken = SyntaxToken(Tokens.NameProgramToken,startIndex,value,value)
+        semiColonToken = self.MatchToken(Tokens.SemiColonToken)
+
         statement = self.ParseGloablScope()
+
         endStatementToken = self.MatchToken(Tokens.EndOfFileToken)
-        return CompilationUnitSyntax(statement, endStatementToken)
-    
+        return CompilationUnitSyntax(programToken,programNameToken,semiColonToken,statement, endStatementToken)
 
     def ParseExpression(self):
         return self.parseAssignmentExpression()

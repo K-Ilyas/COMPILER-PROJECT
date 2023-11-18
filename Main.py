@@ -1,18 +1,6 @@
 
 
-# This is just for a test purposes : 
-
-# lex = Lex("1233+2-3/3")
-
-# while True :
-
-#     next = lex.NextToken()
-
-#     if next.getType() == Tokens.EndOfFileToken : break
-
-#     print(next.getType(),next.getPos(),next.getText(),next.getValue())
-
-import sys,gc
+import sys
 
 from colorama import Fore, Back, Style
 
@@ -20,7 +8,6 @@ from colorama import Fore, Back, Style
 sys.path.insert(0, 'C:/Users/ilyas/Documents/compiler/syntaxAnalyse')
 from Compilation import Compiltaion
 from Tokens import Tokens
-from VariableSymbol import VariableSymbole
 from TextSpan import TextSpan
 
 from SyntaxToken import SyntaxToken
@@ -116,79 +103,61 @@ def printResultAsTree(child,sep,isLast = True):
     
 previous = None
 
-while True :
-       textBuilder = ""
-       while True :
-            line = input(" : ")
+# textBuilder = ""
+# while True :
+#     line = input(" : ")
 
-            if line.strip() == "#":
-                 break
-            else :
-                 textBuilder += line + '\n'
+#     if line.strip() == "#":
+#             break
+#     else :
+#             textBuilder += line + '\n'
 
      
-       syntaxTree = SyntaxTree.Parse(textBuilder)
+syntaxTree = SyntaxTree.Parse(open("L3Code.txt").read())
 
        # printResultAsTree(syntaxTree.getRoot(),"")
-       compiltaion =  Compiltaion(syntaxTree) if previous is None else previous.ContinueWith(syntaxTree)
-       result = None
-       result = compiltaion.evaluate(variables)
+compiltaion =  Compiltaion(syntaxTree) if previous is None else previous.ContinueWith(syntaxTree)
+result = None
+result = compiltaion.evaluate(variables)
 
+if result.getDiagnostics() != [] :
+    text = syntaxTree.getText()
 
-       if result.getDiagnostics() != [] :
-           text = syntaxTree.getText()
-
-           for diagnostic in result.getDiagnostics() :
+    for diagnostic in result.getDiagnostics() :
                         
-                               lineIndex = text.getLineIndex(int(diagnostic.getSpan().getStart()))
-                               lineIndex = syntaxTree.getText().getLineIndex(diagnostic.getSpan().getStart())
-                               line = syntaxTree.getText().getLines()[lineIndex]
-                               lineNumber = lineIndex + 1
-                               character = diagnostic.getSpan().getStart() - line.getStart() + 1
+                        lineIndex = text.getLineIndex(int(diagnostic.getSpan().getStart()))
+                        lineIndex = syntaxTree.getText().getLineIndex(diagnostic.getSpan().getStart())
+                        line = syntaxTree.getText().getLines()[lineIndex]
+                        lineNumber = lineIndex + 1
+                        character = diagnostic.getSpan().getStart() - line.getStart() + 1
 
-                               print(Fore.RED,end="")
-                               print(f"({lineNumber}, {character}): ",end="")
-                               print(diagnostic)
-                               print(Style.RESET_ALL,end="")
+                        print(Fore.RED,end="")
+                        print(f"({lineNumber}, {character}): ",end="")
+                        print(diagnostic)
+                        print(Style.RESET_ALL,end="")
 
-                               prefixSpan = TextSpan.fromBounds(line.getStart(), diagnostic.getSpan().getStart())
-                               suffixSpan = TextSpan.fromBounds(diagnostic.getSpan().getEnd(), line.end())
+                        prefixSpan = TextSpan.fromBounds(line.getStart(), diagnostic.getSpan().getStart())
+                        suffixSpan = TextSpan.fromBounds(diagnostic.getSpan().getEnd(), line.end())
 
 
-                               prefix = syntaxTree.getText().ToString_span(prefixSpan)
-                               error = syntaxTree.getText().ToString_span(diagnostic.getSpan())
-                               suffix = syntaxTree.getText().ToString_span(suffixSpan)
+                        prefix = syntaxTree.getText().ToString_span(prefixSpan)
+                        error = syntaxTree.getText().ToString_span(diagnostic.getSpan())
+                        suffix = syntaxTree.getText().ToString_span(suffixSpan)
 
-                               print("    ",end="")
-                               print(prefix,end="")
+                        print("    ",end="")
+                        print(prefix,end="")
 
-                               print(Fore.RED,end="")
-                               print(error,end="")
-                               print(Style.RESET_ALL,end="")
+                        print(Fore.RED,end="")
+                        print(error,end="")
+                        print(Style.RESET_ALL,end="")
+                        print(suffix,end="")
+                        print("")
 
-                               print(suffix,end="")
-
-                               print("")
-
-       else :     
-           syntaxTree.getRoot().WriteTo(print)
-           print(result.getValue())
-           previous = compiltaion
+else :     
+        if input("\ndo you want to see the parsing Tree ? [yes/no]  : ").strip().lower() == "yes" :
+            
+            syntaxTree.getRoot().WriteTo(print)
+        result.getValue()
+        previous = compiltaion
 
     
-       if result.getDiagnostics() == [] :
-               initCompiler("cCode.c")               
-               compile(syntaxTree.getRoot(),"cCode.c")
-               endCompiler("cCode.c")
-
-   # variableDeclaration.append(self.MatchToken(Tokens.IdentifierToken))
-        # while True :
-        #     if self.current().getType() == Tokens.CommaToken:
-        #         self.MatchToken(Tokens.CommaToken)
-        #         variableDeclaration.append(self.MatchToken(Tokens.IdentifierToken))
-        #         print(self.current().getType())
-        #     else :
-        #         break
-
-        # for item in variableDeclaration :
-        #     print(item.getText())

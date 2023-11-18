@@ -15,7 +15,6 @@ class LiteralExpressionSyntax(ExpressionSyntax):
         self.value = value if value is not None else literalToken.getValue()
 
 
-
     def getLiteralToken(self):
         return self.literalToken
     

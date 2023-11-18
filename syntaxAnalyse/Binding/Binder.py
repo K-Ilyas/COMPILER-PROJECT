@@ -10,6 +10,7 @@ from Binding.BoundGloablStatement import BoundGloablStatement
 from Binding.BoundGlobalScope import BoundGlobalScope
 from Binding.BoundIfStatement import BoundIfStatement
 from Binding.BoundLiteralExpression import BoundLiteralExpression
+from Binding.BoundReadFunction import BoundReadFunction
 from Binding.BoundScope import BoundScope
 from Binding.BoundUnrayExpression import BoundUnrayExpression
 from Binding.BoundUnrayOperator import BoundUnrayOperator
@@ -50,6 +51,7 @@ from WhileStatementSyntax import WhileStatementSyntax
 from ForStatementSyntax import ForStatementSyntax
 from GlobalScopeSyntax import GlobalScopeSyntax
 from WriteFunctionSyntax import WriteFunctionSyntax
+from ReadFunctionSyntax import ReadFunctionSyntax
 
 class Binder():
 
@@ -96,7 +98,6 @@ class Binder():
     
 
     def BindStatement(self, syntax):
-         
          match(syntax.getType()):  
             case Tokens.BlockStatement :
                 syntax.__class__ = BlockStatementSyntax
@@ -119,6 +120,10 @@ class Binder():
             case Tokens.WriteFunction :
                 syntax.__class__ = WriteFunctionSyntax
                 return self.BindWriteFunction(syntax)
+        
+            case Tokens.ReadFunction :
+                syntax.__class__ = ReadFunctionSyntax
+                return self.BindReadFunction(syntax)
             case _:
                 raise Exception(
                     "Unexpected syntax {}".format(syntax.getType()))
@@ -131,6 +136,7 @@ class Binder():
             statement = self.BindStatement(statementSyntax)
             statements.append(statement)
         self._scope = self._scope.getParent()
+        
         return BoundBlockStatement(statements)
     
     def BindGlobalStatement(self,syntax):
@@ -148,10 +154,10 @@ class Binder():
             name = syntax.getIdentifier().getText()
             isReadOnly = syntax.getKeyword().getType() == Tokens.ConstKeyword 
             initializer = self.BindExpression(syntax.getIntializer())
-            variable =  VariableSymbole(name, isReadOnly, initializer.type())
+            variable =  VariableSymbole(name, isReadOnly, initializer.type() )
 
             succed = self._scope.tryDeclare(variable)
-    
+
             if not succed :
                 self._diagnostics.ReportVariableAlreadyDeclared(syntax.getIdentifier().getSpan(), name)
 
@@ -180,6 +186,13 @@ class Binder():
             listOfExpression.append(self.BindExpression(expression))
 
         return BoundWriteFunction(listOfExpression)
+    
+    def BindReadFunction(self,syntax):
+        listOfAssignments = []
+        for assignement in syntax.getAssignmentExpressions():
+            listOfAssignments.append(self.BindAssignmentExpressionForRead(assignement))
+
+        return BoundReadFunction(listOfAssignments)
    
     def BindForStatement(self,syntax):
         lowerBound = self.BindExpressionIf(syntax.getLowerBound(),int)
@@ -206,12 +219,11 @@ class Binder():
     def BindExpressionIf(self,syntax,targetType):
         result = self.BindExpression(syntax)
         if result.type() != targetType :
-           self._diagnostics.ReportCannotConvert(syntax.getSpan(),result.type(), targetType)
+           self._diagnostics.ReportCannotConvert(syntax.getOperatorToken().getSpan(),result.type(), targetType)
         
         return result
 
     def BindExpression(self, syntax):
-
         match(syntax.getType()):  
             case Tokens.ParenthesizedExpressionSyntax :
                 syntax.__class__ = ParenthesizedExpressionSyntax
@@ -225,6 +237,7 @@ class Binder():
             case Tokens.AssignmentExpression :
                 syntax.__class__ = AssignmentExpressionSyntax
                 return self.BindAssignmentExpression(syntax)
+            
             case Tokens.UnrayExpression:
                 syntax.__class__ = UnrayExpressionSyntax
                 return self.BindUnaryExpression(syntax)
@@ -268,10 +281,10 @@ class Binder():
        if exist[1].getIsReadOnly() :
             self._diagnostics.ReportCannotAssign(syntax.getEqualsToken().getSpan(),name)
 
-        
-       if exist[1] != None and boundExpression.type() != exist[1].type():
-            self._diagnostics.ReportCannotConvert(syntax.getExpression().getLiteralToken().getSpan(),boundExpression.type(),exist[1].type())
-            return boundExpression
+    #    print(boundExpression)
+    #    if exist[1] != None and boundExpression.type() != exist[1].type():
+    #         self._diagnostics.ReportCannotConvert(syntax.getExpression().getLiteralToken().getSpan(),boundExpression.type(),exist[1].type())
+    #         return boundExpression
 
     #    defaultValue = 0 if boundExpression.type() == int else (False if boundExpression.type() == bool else None)
 
@@ -279,6 +292,22 @@ class Binder():
     #        raise Exception("Unsupported variable type {}".format(boundExpression.getType()))
          
        return BoundAssignmentExpression(exist[1],boundExpression) 
+    
+    def BindAssignmentExpressionForRead(self,syntax):
+       name =  syntax.getIdentifierToken().getText()
+  
+      
+       exist = self._scope.tryLookUp(name)
+       if not exist[0]:
+            self._diagnostics.ReportUndefinedName(syntax.getIdentifierToken().getSpan(),name)
+            return 0
+       
+       if exist[1].getIsReadOnly() :
+            self._diagnostics.ReportCannotAssign(syntax.getEqualsToken().getSpan(),name)
+       
+      
+       
+       return BoundAssignmentExpression(exist[1],0) 
 
     def BindUnaryExpression(self, syntax):
 

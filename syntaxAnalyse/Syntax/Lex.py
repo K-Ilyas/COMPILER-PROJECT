@@ -77,8 +77,11 @@ class Lex:
                     self.__type= Tokens.StarToken
                     self.incPos()
                 case '/':
-                    self.__type= Tokens.SlashToken
-                    self.incPos()
+                   if self.lookahead() == "*":
+                      self.ReadComment()
+                   else :
+                     self.__type= Tokens.SlashToken
+                     self.incPos()
                 case ",":
                     self.__type= Tokens.CommaToken
                     self.incPos()    
@@ -89,6 +92,9 @@ class Lex:
                 case ')':
                     self.__type= Tokens.CloseParenthesisToken
                     self.incPos()
+                case '\'':
+                    self.__type= Tokens.SingleQuteToken
+                    self.incPos()
                 case '"':
                     self.__type= Tokens.DoubleQuteToken
                     self.incPos()
@@ -96,9 +102,13 @@ class Lex:
                     self.__type= Tokens.SemiColonToken
                     self.incPos()
                 
+                case '\\':
+                    if self.lookahead() == 'n':
+                     self.__type= Tokens.AntiSlashToken
+                     self.__position +=2
+                
                 case '&':
                     if  self.lookahead() == '&':
-                    
                         self.__type= Tokens.AmpersandAmpersandToken
                         self.__position += 2
                 
@@ -152,12 +162,17 @@ class Lex:
                         self.__position += 2 
                     else :
                         self.__type= Tokens.LessToken
-                        self.incPos()    
+                        self.incPos()   
+
+                 
                  
                 case '0' | '1' | '2' | '3' | '4' | '5' |'6' | '7' | '8' | '9':
                 
                     self.ReadNumberToken()
-                    
+                
+     
+                
+                
                 case ' ' | '\t' | '\n' | '\r':
           
                     self.ReadWhiteSpace()
@@ -290,11 +305,22 @@ class Lex:
 
         text = SynataxFacts.GetText(self.__type)
 
+        
+
         if text == None :
             text = self.text.ToString_start( self.__start,self.__start + length )
 
-        return  SyntaxToken(self.__type, self.__start, text, self.__value);
+        return  SyntaxToken(self.__type, self.__start, text, self.__value)
     
+    def ReadComment(self):
+         while True :
+           self.incPos()
+           if self.current() == "*" and self.lookahead() == "/" :
+             break
+         self.__position +=2
+       
+         self.__type = Tokens.CommentToken 
+         
     def ReadWhiteSpace(self):
         while (self.current().isspace()):
                 self.incPos()
@@ -304,9 +330,7 @@ class Lex:
     def ReadNumberToken(self):
         while (self.current().isdigit()):
                 self.incPos()
-
         txt = self.text.ToString_start(self.__start,self.__position)
-
         try:
                 pack("I", int(txt))
         except error:

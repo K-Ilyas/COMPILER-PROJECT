@@ -6,6 +6,7 @@ from Binding.BoundForStatement import BoundForStatement
 from Binding.BoundGlobalScope import BoundGlobalScope
 from Binding.BoundIfStatement import BoundIfStatement
 from Binding.BoundNodeType import BoundNodeType
+from Binding.BoundReadFunction import BoundReadFunction
 from Binding.BoundVariableDeclaration import BoundVariableDeclaration
 from Binding.BoundVariableExpression import BoundVariableExpression
 from Binding.BoundWhileStatement import BoundWhileStatement
@@ -70,6 +71,9 @@ class Evaluator:
         case BoundNodeType.WriteFunction:
             node.__class__ = BoundWriteFunction
             return self.EvaluateWriteFunction(node)
+        case BoundNodeType.ReadFunction:
+            node.__class__ = BoundReadFunction
+            return self.EvaluateReadFunction(node)
         case BoundNodeType.ForStatement:
             node.__class__ = BoundForStatement
             return self.EvaluateForStatement(node)
@@ -84,6 +88,7 @@ class Evaluator:
         value = self.ExpressionResult(node.getIntializer())
         self._variables[node.getVariable()] = value
         self._lastValue = value
+    
     def EvaluteExpressionStatement(self,node):
         self._lastValue = self.ExpressionResult(node.getExpression())
     
@@ -123,22 +128,28 @@ class Evaluator:
 
     def EvaluateWhileStatement(self,node):
        
-        print(type(node))
 
         while self.ExpressionResult(node.getCondition()):
             self.EvaluateStatement(node.getBody())
         
     
     def EvaluateWriteFunction(self,node):
-        print(type(node))
+        print()
         for item in node.getPrimaryExpressions():
-            print(type(item))
-            print(self.ExpressionResult(item))
+            print(self.ExpressionResult(item),end="")
 
+    def EvaluateReadFunction(self,node):
+        for item in node.getAssignmentExpressions():
+            value = input("")
+            try:
+              int(value);item.getVariable().typ = int
+            except ValueError:
+              item.getVariable().typ = str
+            self._variables[item.getVariable()] = value
+    
     def EvaluateForStatement(self,node):
         lowerBound = self.ExpressionResult(node.getLowerBound())
         upperBound = self.ExpressionResult(node.getUpperBound())
-
         for i in range(lowerBound,upperBound+1):
           self._variables[node.getVariable()] = i
           self.EvaluateStatement(node.getBody())
@@ -153,6 +164,9 @@ class Evaluator:
             value = self.ExpressionResult(a.getExpression())
             self._variables[a.getVariable()] = value
             return value
+    
+  
+    
     def EvaluateUnaryExpression(self,u):
             operand = self.ExpressionResult(u.getOperand())
             if u.getOp().getType() == BoundUnrayOperatorType.Identity:

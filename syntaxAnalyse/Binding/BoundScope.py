@@ -23,6 +23,7 @@ class BoundScope:
         
         self._variables[variable.getName()] = variable
         return True
+    
 
 
     def tryLookUp(self,name):

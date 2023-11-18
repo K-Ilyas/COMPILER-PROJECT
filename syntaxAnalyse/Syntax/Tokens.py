@@ -3,6 +3,8 @@
 from enum import Enum, auto
 
 class Tokens(Enum):
+    ProgramToken = auto(),
+    NameProgramToken = auto(),
     NumberToken = auto(),
     DoubleQuteToken = auto(),
     SpaceToken = auto(),
@@ -27,6 +29,7 @@ class Tokens(Enum):
     VarKeyword= auto(),
     ConstKeyword = auto(),
     IdentifierToken = auto(),
+    SingleQuteToken = auto(),
     BangToken = auto(),
     AmpersandAmpersandToken = auto(),
     PipePipeToken = auto(),
@@ -57,4 +60,9 @@ class Tokens(Enum):
     GlobalScope = auto(),
     StringToken = auto(),
     WriteKeyword = auto(),
-    WriteFunction = auto()
+    WriteFunction = auto(),
+    AntiSlashToken= auto(),
+    ReadFunction = auto(),
+    ReadKeyword = auto(),
+    CommentToken = auto(),
+ 

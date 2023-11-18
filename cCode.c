@@ -1,4 +1,4 @@
 #include <stdio.h>
 #include <stlib.h>
 int main(){
-12}
+int a=12{a}}

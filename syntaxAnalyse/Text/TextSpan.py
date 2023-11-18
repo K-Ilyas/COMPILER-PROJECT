@@ -6,8 +6,6 @@ class TextSpan:
     def __init__(self,start,length) -> None:
         self.start = start 
         self.length = length
-        
-
     
     def getStart(self):
         return self.start
