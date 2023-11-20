@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys, os
 
 from colorama import Fore, Back, Style
@@ -155,7 +153,7 @@ if result.getDiagnostics() != [] :
 
 else :     
         if input("\ndo you want to see the parsing Tree ? [yes/no]  : ").strip().lower() == "yes" :
-            
+
             syntaxTree.getRoot().WriteTo(print)
         result.getValue()
         previous = compiltaion

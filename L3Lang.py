@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import sys,gc
 from colorama import Fore, Back, Style
 
@@ -291,6 +290,7 @@ if __name__ == "__main__":
  
     if flag == '-c':
         (input_file_path, argv) = uncons(argv)
+        print(input_file_path)
         Final(input_file_path, "output.c", '-c')
         print("Generate the C program ")
         call_cmd(["gcc", "output.c"])
