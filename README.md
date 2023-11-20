@@ -6,12 +6,15 @@
 * Basic REPL (read-eval-print loop) for an expression evaluator
 * Added lexer, a parser, evaluator, binder ( to verify the result of each statement ) 
 * Handle `+`, `-`, `*`, `/`, `||`, `&&` and parenthesized expressions
+* support `<`, `<=`, `>=`, and `>`
 * Support `int`, `string`, `bool` Data types.
 * Print syntax trees ( Tree represenation of the parser )
 * support unray operators (`-`,`+`)
 * declare variables : `var` to declare global variables and `const` to declare read-only variables
 * support scopes ( define nested scops using Curly brackets `{`,`}`)
-
+* support position and Line Numbers
+* support if-statements, while-statements and for-statements
+* support scopes
 * Tree example :
   
 ``` 
