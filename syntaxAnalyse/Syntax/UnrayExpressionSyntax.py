@@ -21,7 +21,3 @@ class UnrayExpressionSyntax(ExpressionSyntax):
         
         def getType(self):
             return Tokens.UnrayExpression
-        
-        # def getChildrens(self):
-        #    yield self.operatorToken 
-        #    yield self.operand

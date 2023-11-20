@@ -103,19 +103,9 @@ def printResultAsTree(child,sep,isLast = True):
     
 previous = None
 
-# textBuilder = ""
-# while True :
-#     line = input(" : ")
-
-#     if line.strip() == "#":
-#             break
-#     else :
-#             textBuilder += line + '\n'
-
      
 syntaxTree = SyntaxTree.Parse(open("L3Code.txt").read())
 
-       # printResultAsTree(syntaxTree.getRoot(),"")
 compiltaion =  Compiltaion(syntaxTree) if previous is None else previous.ContinueWith(syntaxTree)
 result = None
 result = compiltaion.evaluate(variables)
