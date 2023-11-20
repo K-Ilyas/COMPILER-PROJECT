@@ -11,10 +11,9 @@
 * Print syntax trees ( Tree represenation of the parser )
 * support unray operators (`-`,`+`)
 * declare variables : `var` to declare global variables and `const` to declare read-only variables
-* support scopes ( define nested scops using Curly brackets `{`,`}`)
+* support scopes ( define nested scops using Curly brackets `begin`,`end`)
 * support position and Line Numbers
 * support if-statements, while-statements and for-statements
-* support scopes
 * Tree example :
   
 ``` 
