@@ -143,6 +143,7 @@ class Evaluator:
             value = input("")
             try:
               int(value);item.getVariable().typ = int
+              value = int(value)
             except ValueError:
               item.getVariable().typ = str
             self._variables[item.getVariable()] = value

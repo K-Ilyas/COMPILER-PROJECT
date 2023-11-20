@@ -43,7 +43,7 @@ class Parse:
         isString = False
         while True:
             token = lex.NextToken()
-
+   
             if token.getType() == Tokens.EndOfFileToken:
                 self.__listTokens.append(token)
                 break
@@ -55,8 +55,7 @@ class Parse:
             else :
                 if token.getType() != Tokens.BadToken and token.getType() != Tokens.CommentToken  and isString :
                     self.__listTokens.append(token)
-        # for item in self.__listTokens:
-        #     print(item.getType())
+       
         self.__errors.AddErrors(lex.getErrors())
         # self.__errors =  deepcopy(lex.getErrors())
 
@@ -275,7 +274,7 @@ class Parse:
     def ParseCompilationUnit(self):
         programToken = self.MatchToken(Tokens.ProgramToken)
         startIndex = self.__position
-        value = ""
+        value = self.MatchToken(Tokens.IdentifierToken).getText()
         while self.current().getType() != Tokens.SemiColonToken and self.current().getType() == Tokens.IdentifierToken:
             value += self.NextToken().getText()
         

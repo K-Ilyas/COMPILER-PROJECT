@@ -309,7 +309,7 @@ class Lex:
 
         if text == None :
             text = self.text.ToString_start( self.__start,self.__start + length )
-
+   
         return  SyntaxToken(self.__type, self.__start, text, self.__value)
     
     def ReadComment(self):
