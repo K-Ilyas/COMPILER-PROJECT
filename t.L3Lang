@@ -1,8 +1,0 @@
-program Ahmed;
-var a := 5;
-var b := 4;
-write("Ahmed    ", 6, a,"\n");
-var c := "Hello from L3Lang\n";
-write(c)
-dsa
-
