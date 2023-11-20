@@ -106,6 +106,9 @@ class Lex:
                     if self.lookahead() == 'n':
                      self.__type= Tokens.AntiSlashToken
                      self.__position +=2
+                    else :
+                      self.__type = Tokens.IgnoreToken
+                      self.incPos()
                 
                 case '&':
                     if  self.lookahead() == '&':

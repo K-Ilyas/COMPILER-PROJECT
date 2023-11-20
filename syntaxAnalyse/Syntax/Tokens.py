@@ -64,5 +64,5 @@ class Tokens(Enum):
     AntiSlashToken= auto(),
     ReadFunction = auto(),
     ReadKeyword = auto(),
-    CommentToken = auto(),
- 
+    CommentToken = auto(), 
+    IgnoreToken = auto()

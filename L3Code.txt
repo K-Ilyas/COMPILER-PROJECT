@@ -22,11 +22,7 @@ program myprogram;
     BloodType := "0-";
     read(age); /* U can read multiple value */
     read(Firstname, LastName, BloodType);
-
-
-
-
-  
+    
     if age > 21 then
       begin
         write("U can enter");
