@@ -3,8 +3,9 @@
 import sys
 from EvaluationResult import EvaluationResult
 import threading
-
-sys.path.insert(0, 'C:/Users/ilyas/Documents/compiler/syntaxAnalyse')
+import os
+ROOT_DIR = os.path.abspath(os.curdir)
+sys.path.insert(0, ROOT_DIR+'/syntaxAnalyse')
 from Binding.Binder import Binder
 from Evaluator import Evaluator
 

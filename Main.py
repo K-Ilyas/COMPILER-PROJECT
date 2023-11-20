@@ -1,11 +1,11 @@
+#!/usr/bin/env python3
 
-
-import sys
+import sys, os
 
 from colorama import Fore, Back, Style
 
-
-sys.path.insert(0, 'C:/Users/ilyas/Documents/compiler/syntaxAnalyse')
+ROOT_DIR = os.path.abspath(os.curdir)
+sys.path.insert(0, ROOT_DIR+'/syntaxAnalyse')
 from Compilation import Compiltaion
 from Tokens import Tokens
 from TextSpan import TextSpan

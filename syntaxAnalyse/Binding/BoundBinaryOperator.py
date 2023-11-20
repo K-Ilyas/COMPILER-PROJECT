@@ -2,7 +2,9 @@
 from Binding.BoundBinaryOperatorType import BoundBinaryOperatorType
 import sys
 
-sys.path.insert(0, 'C:/Users/ilyas/Documents/compiler/syntaxAnalyse/Syntax')
+import os
+ROOT_DIR = os.path.abspath(os.curdir)
+sys.path.insert(0, ROOT_DIR+'/syntaxAnalyse/Syntax')
 from Tokens import Tokens
 
 

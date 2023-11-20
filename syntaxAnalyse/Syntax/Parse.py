@@ -416,7 +416,11 @@ class Parse:
         self.MatchToken(Tokens.DoubleQuteToken)  
         value = ""
         while self.current().getType() != Tokens.DoubleQuteToken :
-            value += self.NextToken().getText()
+            # next = self.NextToken().getText()
+            # if next == '\n':
+            #     value += '\\n'
+            # else : value += next
+            value = value + self.NextToken().getText()
         self.MatchToken(Tokens.DoubleQuteToken)
         return LiteralExpressionSyntax(SyntaxToken(Tokens.StringToken,startIndex,value,value))
     

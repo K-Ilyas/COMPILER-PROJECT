@@ -348,6 +348,5 @@ class Lex:
                 self.incPos()
 
         txt = self.text.ToString_start( self.__start,self.__position)
-
-        self.__type = SynataxFacts.getKeywordType(txt)
         
+        self.__type = SynataxFacts.getKeywordType(txt)
