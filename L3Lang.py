@@ -173,8 +173,6 @@ def compile(child, output_file, parent=None, grandparent=None):
 
 
 
-
-
 # previous = None
 def Final(file_path, output):
 
@@ -195,6 +193,7 @@ def Final(file_path, output):
     initCompiler(output)               
     compile(syntaxTree.getRoot(),output)
     endCompiler(output)
+
 
 def simulate(file_path):
     text_file = open(file_path, "r")
@@ -233,6 +232,7 @@ def simulate(file_path):
             syntaxTree.getRoot().WriteTo(print)
         # print(result.getValue())
        
+
 
 
 def usage(program_name):
