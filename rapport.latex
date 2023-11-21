@@ -1,0 +1,324 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{minted}
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{Compiler en Python}
+\author{Ilyas KRITETE Ahmed GUETTI}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Your abstract.
+\end{abstract}
+
+\section{Syntax}
+
+\subsection{Exemple}
+
+\begin{minted}[mathescape, linenos]{pascal}
+program TestingUnit;
+var name := "John";
+var age := 25;
+var calc := ((12*9)+(3/9))/26;
+write("Hello, my name is ", name, "\n");
+write("I am", age, "years old\n");
+write("calc = ", calc);
+
+if age >= 18 then
+    begin
+        write("I am an adult\n");
+    end
+else
+    begin
+        write("I am a minor\n");
+    end
+
+var counter := 0;
+while counter > 3 do
+    begin
+        write("Count:", counter,"  ");
+        counter:=counter+1;
+    end
+\end{minted}
+
+equivalente dans python
+\begin{minted}[mathescape, linenos]{python}
+name = "John"
+age = 25
+calc = ((12*9)+(3/9))/26
+print(f"Hello, my name is {name});
+ptint(f"I am {age} years old");
+print(f"calc = {calc}");
+
+if age >= 18:
+    print("I am an adult");
+else:
+    print("I am a minor");
+
+counter := 0;
+while counter > 3:
+    write("Count:", counter,"  ");
+    counter:=counter+1;
+\end{minted}
+        \subsubsection{Déclarations de variables :}
+            \begin{itemize}
+                \item\textbf{name: string = 'John';}: Déclare une variable name de type string et l'initialise avec la valeur 'John'.
+
+                \item\textbf{age: integer = 25;}:Déclare une variable age de type \textbf{integer} et l'initialise avec la valeur 25.
+
+                \item\textbf{calc: real;}: Déclare une variable calc de type \textbf{real} (nombre à virgule flottante) sans initialisation.
+            \end{itemize}
+        \subsubsection{Calculs :}
+        \textbf{calc := ((12 * 9) + (3 / 9)) / 26;} : Effectue un calcul et attribue le résultat à la variable calc. Le calcul est ((12 * 9) + (3 / 9)) / 26.
+        \subsubsection{Sortie (Output) :}
+        \begin{itemize}
+                \item\textbf{write("Hello, my name is ", name, "$\backslash$n");}: Affiche une ligne dans la console, imprimant le texte "Hello, my name is " suivi de la valeur de la variable name.
+
+                \item\textbf{write("I am", age, "years old$\backslash$n");
+}: Affiche une ligne dans la console, imprimant le texte "I am " suivi de la valeur de la variable age et " years old".
+
+                \item\textbf{writeln('calc = ', calc,"$\backslash$")n;}:  Affiche une ligne dans la console, imprimant le texte "calc = " suivi de la valeur de la variable calc.
+            \end{itemize}
+
+            \subsubsection{Instruction conditionnelle :}
+            \textbf{if age >= 18 then ... else ...}: Vérifie si la valeur de age est supérieure ou égale à 18. Si c'est vrai, cela affiche \textbf{"I am an adult$\backslash$n"}; sinon, cela affiche "I am a minor$\backslash$n".
+
+            \subsubsection{Boucle (Loop) :}
+        \begin{itemize}
+                \item\textbf{var counter := 0;}: Déclare une variable a de type integer et l'initialise avec la valeur 0. 
+
+                \item\textbf{while a < 3 do ...}:Exécute le bloc de code à l'intérieur de la boucle while tant que la condition a < 3 est vraie.
+                    \begin{itemize}
+                        \item \textbf{write("Count:", counter,"  ");}: Affiche la valeur de a suivie de deux espaces dans la console.
+
+                        \item  \textbf{counter := counter + 1;} Incrémente la valeur de a de 1 à chaque itération.
+                    \end{itemize}
+            \end{itemize}        
+            
+\subsection{Syntax Token}
+
+
+
+\begin{minted}[mathescape, linenos]{python}
+from enum import Enum, auto
+class Tokens(Enum):
+    ProgramToken = auto(),
+    NameProgramToken = auto(),
+    NumberToken = auto(),
+    DoubleQuteToken = auto(),
+    SpaceToken = auto(),
+    PlusToken = auto(),
+    .
+    .
+    .
+    ReadKeyword = auto(),
+\end{minted}
+
+
+
+\subsection{Parser}
+
+\subsubsection*{Parse Variable declarition}
+\begin{minted}[mathescape, linenos]{python}
+    def ParseVariableDeclaration(self):
+        VariableDeclarations= []
+        variablesPosition = []
+        expected = Tokens.ConstKeyword if  self.current().getType() == Tokens.ConstKeyword \
+        else Tokens.VarKeyword
+        keyword = self.MatchToken(expected)
+        identifier = self.MatchToken(Tokens.IdentifierToken)
+        deletePos = self.__position
+        enterTest = False
+        while True :
+            if self.current().getType() == Tokens.CommaToken:
+                self.MatchToken(Tokens.CommaToken)
+                variablesPosition.append(self.__position)
+                VariableDeclarations.append(self.MatchToken(Tokens.IdentifierToken))
+                enterTest = True
+            else :
+                break
+        equalPos = self.__position
+        
+        equals = None
+        intializer = None
+        semiColonToken = None
+
+        if self.current().getType() == Tokens.SemiColonToken :
+            equals = None
+            intializer = LiteralExpressionSyntax(SyntaxToken(Tokens.NumberToken,0,"",0))
+            semiColonToken = self.MatchToken(Tokens.SemiColonToken)
+        else :
+          equals = self.MatchToken(Tokens.EqualsToken)
+          intializer = self.ParseExpression()
+          semiColonToken = self.MatchToken(Tokens.SemiColonToken)
+        
+        if enterTest :
+
+           for i in range(deletePos,equalPos) :
+            #    print("this is wrong",self.__listTokens[i].getText())
+               self.__listTokens[i] = SyntaxToken(Tokens.SpaceToken,i," ",None)
+            #    self.__position -=1
+
+           for item in VariableDeclarations :
+
+               for token in self.__listTokens[self.__position-1:equalPos-1:-1] :
+                   self.__listTokens.insert(self.__position,token)
+        
+               self.__listTokens.insert(self.__position,item)
+               self.__listTokens.insert(self.__position,keyword)      
+        return VariableDeclarationSyntax(keyword,identifier,equals,intializer,semiColonToken)
+\end{minted}
+
+this function parse varible declaration following a specific syntax after we lexe the code source we try to lookup for the const or the var keyword to start the variable declaration then we start our parcing looking for the identifier token who defines a variable name in addition we check for the comma seperartor so we can write multiple variablw declaration in one line, after that we verifie the existatnce of the equale Token, if it is the case we start parsing the Binary Expression start from the equale Token all the way to the semi colon Token that identify the end of the declaration, we should mention in any phase of the variable declaration, we raise
+an error whenever one of the Tokens mention above are missed
+Note : by default the variable get the number 0 if no value has given by the programmer.
+Finally we store the result in a class called SyntaxVariableDeclarition 
+\subsection{Lexer}
+\begin{minted}[mathescape, linenos]{python}
+        match self.current():
+                case '\0':
+                    self.__type= Tokens.EndOfFileToken
+                case '+':
+                    self.__type= Tokens.PlusToken
+                    self.incPos()
+                case '-':
+                    self.__type= Tokens.MinusToken
+                    self.incPos()
+                case '*':
+                    self.__type= Tokens.StarToken
+                    self.incPos()
+                case '/':
+                   if self.lookahead() == "*":
+                      self.ReadComment()
+                   else :
+                     self.__type= Tokens.SlashToken
+                     self.incPos()
+                     .
+                     .
+                     .
+                case '0' | '1' | '2' | '3' | '4' | '5' |'6' | '7' | '8' | '9':
+                    self.ReadNumberToken()
+                case ' ' | '\t' | '\n' | '\r':
+                    self.ReadWhiteSpace()
+                case _:
+                    if self.current().isalpha() :
+                        self.ReadIdentifierOrKeyword()
+                    elif self.current().isspace() :
+                        self.ReadWhiteSpace()
+                    else : 
+                        self.__errors.ReportBadCharacter(self.__position, self.current())
+                        self.incPos()
+        \end{minted}
+
+in this phase we turn the text into list of Tokens like `NumberToken`, `StringToken`, ... etc. By Lexing them character by character while checking types of the provided Token {Lexem}.
+
+\subsection{Binder}
+\begin{minted}[mathescape, linenos]{python}
+ @staticmethod
+    def getBinaryOperators():
+
+        return [
+            BoundBinaryOperator(
+                Tokens.PlusToken, BoundBinaryOperatorType.Addition, int),
+            BoundBinaryOperator(
+                Tokens.PlusToken, BoundBinaryOperatorType.StringConcatenation, str),
+            BoundBinaryOperator(
+                Tokens.MinusToken, BoundBinaryOperatorType.Substraction, int),
+            BoundBinaryOperator(
+                Tokens.SlashToken, BoundBinaryOperatorType.Division, int),
+            BoundBinaryOperator(
+                Tokens.StarToken, BoundBinaryOperatorType.Multiplication, int),
+                .
+                .
+                .
+            BoundBinaryOperator(
+                Tokens.EqualsEqualsToken, BoundBinaryOperatorType.Equals, bool),
+            BoundBinaryOperator(
+                Tokens.BangEqualsToken, BoundBinaryOperatorType.NotEquals, bool),
+        \end{minted}
+The Binder in the parte of the compiler that is responsible of type checking and symentique analysis, it is a container that wrappe the parser to provide meaningfull information about the different branches provided by the parser, then apply a list of functions to insure variable names in scope, performing type checks, and enforcing correctness rules.
+
+
+\subsection{Evaluator}
+\begin{minted}[mathescape, linenos]{python}
+     def EvaluateBinaryExpression(self,b):
+
+            left = self.ExpressionResult(b.getLeft())
+            right = self.ExpressionResult(b.getRight())
+            
+            match b.getOp().getType():
+                case BoundBinaryOperatorType.Addition:
+                    return int(left) + int(right)
+                case BoundBinaryOperatorType.Substraction:
+                    return int(left) - int(right)
+    
+                case BoundBinaryOperatorType.Multiplication:
+                    return int(left) * int(right)
+                case BoundBinaryOperatorType.Division:
+                    if int(right) == 0 or int(left) == 0:
+                        raise Exception("Cannot devide by 0")
+                    return int(left) / int(right)
+                case BoundBinaryOperatorType.StringConcatenation :
+                    return  str(left) +  str(right)
+                case BoundBinaryOperatorType.LogicalAnd:                 
+                    return bool(left) and bool(right)
+                case BoundBinaryOperatorType.LogicalOr:
+                    return bool(left) or bool(right)
+                case BoundBinaryOperatorType.Equals:
+                    return left == right
+                case  BoundBinaryOperatorType.NotEquals:
+                    return left != right
+                case  BoundBinaryOperatorType.Less:
+                    return left < right 
+                case  BoundBinaryOperatorType.Greater:
+                    return left > right
+                case  BoundBinaryOperatorType.GreaterOrEquals:
+                    return left >= right
+                case  BoundBinaryOperatorType.LessOrEquals:
+                    return left <= right
+                case _:
+                    raise Exception(
+                        "Unexpected Binary operator {token}".format(token=b.getOp()))
+        \end{minted}
+it is a program that walks the syntax tree directly and calculate the result of the syntax tree povided by the parser after bind it, it has several functions to handle different cases like variable declaration, while evaluation, if statement evaluation, ... etc.
+
+\subsection{Code Generator}
+
+
+
+\subsection{Execute}
+Linux:
+\begin{lstlisting}[language=bash]
+  $ /usr/bin/python3 L3Lang <FLAGS> <INPUT FILE>
+\end{lstlisting}
+Windows:
+\begin{lstlisting}[language=bash]
+  $ python L3Lang <FLAGS> <INPUT FILE>
+\end{lstlisting}
+
+then you can fount the result in the build directory that is going to be generated automatecly
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.25\linewidth]{frog.jpg}
+\caption{\label{fig:frog}This frog was uploaded via the file-tree menu.}
+\end{figure}
+
+\bibliographystyle{alpha}
+\bibliography{sample}
+
+\end{document}

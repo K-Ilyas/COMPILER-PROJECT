@@ -171,27 +171,12 @@ def compile(child, output_file, parent=None, grandparent=None):
     for child2 in child.getChildrens():
         compile(child2, output_file, child, parent)
 
-def printResultAsTree(child,sep,isLast = True):
-    marker =   "└──" if isLast else "├──"
-    print(sep,end="")
-    print(marker,end="")
-    print(child.getType(),end="")
-    if isinstance(child,SyntaxToken) and child.getValue() != None :
-        print("  ",end="")
-        print(child.getValue(),end="")
-        
-    print("")
-    sep += "    " if isLast else "│   "
-    lst =  list(child.getChildrens())
-    last = lst[-1] if len(lst) != 0 else child
-    for child2 in child.getChildrens():
-        printResultAsTree(child2,sep, last == child2)
 
 
 
 
 # previous = None
-def Final(file_path, output, flag):
+def Final(file_path, output):
 
     # with open(file_path, "r") as f:
     text_file = open(file_path, "r")
@@ -205,54 +190,49 @@ def Final(file_path, output, flag):
     compiltaion =  Compiltaion(syntaxTree)
     
     result = None
-    if flag == '-s':
-        result = compiltaion.evaluate(variables)
 
 
-        if result.getDiagnostics() != [] :
-            text = syntaxTree.getText()
+    initCompiler(output)               
+    compile(syntaxTree.getRoot(),output)
+    endCompiler(output)
 
-            for diagnostic in result.getDiagnostics() :           
-                lineIndex = text.getLineIndex(int(diagnostic.getSpan().getStart()))
-                lineIndex = syntaxTree.getText().getLineIndex(diagnostic.getSpan().getStart())
-                line = syntaxTree.getText().getLines()[lineIndex]
-                lineNumber = lineIndex + 1
-                character = diagnostic.getSpan().getStart() - line.getStart() + 1
-
-                print(Fore.RED,end="")
-                print(f"({lineNumber}, {character}): ",end="")
-                print(diagnostic)
-                print(Style.RESET_ALL,end="")
-
-                prefixSpan = TextSpan.fromBounds(line.getStart(), diagnostic.getSpan().getStart())
-                suffixSpan = TextSpan.fromBounds(diagnostic.getSpan().getEnd(), line.end())
-
-
-                prefix = syntaxTree.getText().ToString_span(prefixSpan)
-                error = syntaxTree.getText().ToString_span(diagnostic.getSpan())
-                suffix = syntaxTree.getText().ToString_span(suffixSpan)
-
-                print("    ",end="")
-                print(prefix,end="")
-
-                print(Fore.RED,end="")
-                print(error,end="")
-                print(Style.RESET_ALL,end="")
-
-                print(suffix,end="")
-
-                print("")
-
-        else :     
+def simulate(file_path):
+    text_file = open(file_path, "r")
+    textBuilder = text_file.read()
+    text_file.close()
+    syntaxTree = SyntaxTree.Parse(textBuilder)
+    compiltaion =  Compiltaion(syntaxTree)
+    result = None
+    result = compiltaion.evaluate(variables)
+    if result.getDiagnostics() != [] :
+        text = syntaxTree.getText()
+        for diagnostic in result.getDiagnostics() :           
+            lineIndex = text.getLineIndex(int(diagnostic.getSpan().getStart()))
+            lineIndex = syntaxTree.getText().getLineIndex(diagnostic.getSpan().getStart())
+            line = syntaxTree.getText().getLines()[lineIndex]
+            lineNumber = lineIndex + 1
+            character = diagnostic.getSpan().getStart() - line.getStart() + 1
+            print(Fore.RED,end="")
+            print(f"({lineNumber}, {character}): ",end="")
+            print(diagnostic)
+            print(Style.RESET_ALL,end="")
+            prefixSpan = TextSpan.fromBounds(line.getStart(), diagnostic.getSpan().getStart())
+            suffixSpan = TextSpan.fromBounds(diagnostic.getSpan().getEnd(), line.end())
+            prefix = syntaxTree.getText().ToString_span(prefixSpan)
+            error = syntaxTree.getText().ToString_span(diagnostic.getSpan())
+            suffix = syntaxTree.getText().ToString_span(suffixSpan)
+            print("    ",end="")
+            print(prefix,end="")
+            print(Fore.RED,end="")
+            print(error,end="")
+            print(Style.RESET_ALL,end="")
+            print(suffix,end="")
+            print("")
+    else :
+        if input("\nDo you want to show the parsing tree: [n/Y]\n").strip().lower() == "y":
             syntaxTree.getRoot().WriteTo(print)
-            print(result.getValue())
+        # print(result.getValue())
        
-
-        
-    if flag == '-c':
-            initCompiler(output)               
-            compile(syntaxTree.getRoot(),output)
-            endCompiler(output)
 
 
 def usage(program_name):
@@ -278,8 +258,6 @@ if __name__ == "__main__":
         exit(1)
     
     (flag, argv) = uncons(argv)
-    # argv = argv[1:]
-
 
     if flag == '-s':
         if len(argv) < 1:
@@ -287,23 +265,22 @@ if __name__ == "__main__":
             print("Error: no input file provided for the simulation")
             exit(1)
         (input_file_path, argv) = uncons(argv)
-        Final(input_file_path, "output.c", '-s')
-        # simulate(program, input_file_path)
+        simulate(input_file_path)
  
-    if flag == '-c':
+    elif flag == '-c':
         (input_file_path, argv) = uncons(argv)
         print(input_file_path)
         if sys.platform == 'win32':
             shutil.rmtree(ROOT_DIR + r"\build")
             os.mkdir(ROOT_DIR + r"\build")
-            Final(input_file_path, ROOT_DIR + r"\build\output.c", '-c')
+            Final(input_file_path, ROOT_DIR + r"\build\output.c")
             print("Generate the C program ")
             call_cmd(["gcc", ROOT_DIR + r"\build\output.c","-obuild\prog"])
             print("Execute the programe")
             call_cmd([ROOT_DIR + r"\build\prog.exe"])
         elif sys.platform == 'linux':
             call_cmd(["mkdir","build"])
-            Final(input_file_path,"./build/output.c", '-c')
+            Final(input_file_path,"./build/output.c")
             print("Generate the C program ")
             call_cmd(["gcc","./build/output.c","-o./build/prog"])
             print("Execute the programe")
