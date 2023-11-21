@@ -64,9 +64,9 @@ def compile(child, output_file, parent=None, grandparent=None):
                     else : 
                         out.write("char* "+str(variable.getText())+"=")
                         variables['char*'].append(variable.getText())
-                # case Tokens.IdentifierToken:
-                #     if grandparent.getType() not in {Tokens.WriteFunction, Tokens.ReadFunction, Tokens.VariableDeclaration}:
-                #         out.write(str(child.getText()))
+                case Tokens.IdentifierToken:
+                    if grandparent.getType() not in {Tokens.WriteFunction, Tokens.ReadFunction} and parent.getType() != Tokens.VariableDeclaration:
+                        out.write(str(child.getText()))
                 case Tokens.EqualsToken:
                     if parent.getType() != Tokens.VariableDeclaration:
                         out.write("=")
@@ -164,8 +164,8 @@ def compile(child, output_file, parent=None, grandparent=None):
                       
                 case Tokens.StringToken:
                     if grandparent.getType() not in {Tokens.WriteFunction, Tokens.ReadFunction}:
-                        out.write('"' + str(child.getValue().replace("\n", "\\n")) + '"')
-                    
+                        out.write('"' + str(child.getValue().replace("\\", "\\")) + '"')
+                
                     
 
     for child2 in child.getChildrens():
@@ -292,8 +292,12 @@ if __name__ == "__main__":
  
     if flag == '-c':
         (input_file_path, argv) = uncons(argv)
+<<<<<<< HEAD
         print(input_file_path)
         Final(input_file_path, r"C:\Users\ilyas\Documents\compiler\output.c", '-c')
+=======
+        Final(input_file_path, "output.c", '-c')
+>>>>>>> 0f812fecd625446a0b2369a18cc7141587ad7f35
         print("Generate the C program ")
         call_cmd(["gcc", r"C:\Users\ilyas\Documents\compiler\output.c"])
         # call_cmd(["rm", "output.c"])
