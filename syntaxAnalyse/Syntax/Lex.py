@@ -106,6 +106,7 @@ class Lex:
                      self.__type= Tokens.AntiSlashToken
                      self.__position +=2
                     else :
+
                       self.__type = Tokens.IgnoreToken
                       self.incPos()
                 

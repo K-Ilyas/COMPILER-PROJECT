@@ -164,9 +164,8 @@ def compile(child, output_file, parent=None, grandparent=None):
                       
                 case Tokens.StringToken:
                     if grandparent.getType() not in {Tokens.WriteFunction, Tokens.ReadFunction}:
-                        out.write('"' + str(child.getValue().replace("\\", "\\")) + '"')
+                        out.write('"' + str(child.getValue()) + '"')
                 
-                    
 
     for child2 in child.getChildrens():
         compile(child2, output_file, child, parent)
@@ -292,17 +291,13 @@ if __name__ == "__main__":
  
     if flag == '-c':
         (input_file_path, argv) = uncons(argv)
-<<<<<<< HEAD
         print(input_file_path)
         Final(input_file_path, r"C:\Users\ilyas\Documents\compiler\output.c", '-c')
-=======
-        Final(input_file_path, "output.c", '-c')
->>>>>>> 0f812fecd625446a0b2369a18cc7141587ad7f35
         print("Generate the C program ")
         call_cmd(["gcc", r"C:\Users\ilyas\Documents\compiler\output.c"])
         # call_cmd(["rm", "output.c"])
         print("Execute the programe")
-        call_cmd([".\a.out"])
+        call_cmd([r"C:\Users\ilyas\Documents\compiler\a.exe"])
         # call_cmd(["ld","-o", "output", "output.o"])
         # subprocess.call(["chmod","+x", "output"])
         

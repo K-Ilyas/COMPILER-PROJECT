@@ -3,11 +3,8 @@ var a := 3;
 if a < 5 then
     begin
         var b := 12;
-<<<<<<< HEAD
-        write("Hello yes 3 < 5 var a := 7\");
-=======
-        write("Hello yes 3 < 5 var a := 7; \\");
->>>>>>> 0f812fecd625446a0b2369a18cc7141587ad7f35
+      write("Hello yes 3 < 5 var a := 7 \");
+
         write(15);
     end
 else
