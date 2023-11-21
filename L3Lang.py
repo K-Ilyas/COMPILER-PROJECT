@@ -295,13 +295,13 @@ if __name__ == "__main__":
         if sys.platform == 'win32':
             Final(input_file_path, ROOT_DIR + r"\output.c", '-c')
             print("Generate the C program ")
-            call_cmd(["gcc", ROOT_DIR + r"\output.c","prog"])
+            call_cmd(["gcc", ROOT_DIR + r"\output.c","-o prog"])
             print("Execute the programe")
             call_cmd([ROOT_DIR + r"\prog.exe"])
         elif sys.platform == 'linux':
             Final(input_file_path,"./output.c", '-c')
             print("Generate the C program ")
-            call_cmd(["gcc","./output.c","prog"])
+            call_cmd(["gcc","./output.c","-o prog"])
             print("Execute the programe")
             call_cmd(["./prog"])
 
