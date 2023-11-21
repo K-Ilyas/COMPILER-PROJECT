@@ -55,6 +55,7 @@ def compile(child, output_file, parent=None, grandparent=None):
                     out.write(";\n")
                 case Tokens.OpenBraceToken:
                     out.write("{\n")
+              
                 case Tokens.VarKeyword:
                     variable = [e[1] for e in getSibling(parent) if e[0] == Tokens.IdentifierToken][0]
                     if Tokens.NumberToken in [a.getType() for a in getAllChildren(parent)]:
@@ -78,6 +79,7 @@ def compile(child, output_file, parent=None, grandparent=None):
                     out.write("0")
                 case Tokens.CloseBraceToken:
                     out.write("}\n")
+            
                 case Tokens.IfKeyword:
                     out.write("if(")
                 case Tokens.WhileKeyword:
@@ -262,7 +264,7 @@ def usage(program_name):
 def call_cmd(cmd):
     print(" ".join(cmd))
     subprocess.call(cmd)
-
+    
 def uncons(xs):
     return (xs[0], xs[1:])
 
@@ -291,16 +293,16 @@ if __name__ == "__main__":
     if flag == '-c':
         (input_file_path, argv) = uncons(argv)
         print(input_file_path)
-        Final(input_file_path, "output.c", '-c')
+        Final(input_file_path, r"C:\Users\ilyas\Documents\compiler\output.c", '-c')
         print("Generate the C program ")
-        call_cmd(["gcc", "output.c"])
+        call_cmd(["gcc", r"C:\Users\ilyas\Documents\compiler\output.c"])
         # call_cmd(["rm", "output.c"])
         print("Execute the programe")
-        call_cmd(["./a.out"])
+        call_cmd([".\a.out"])
         # call_cmd(["ld","-o", "output", "output.o"])
         # subprocess.call(["chmod","+x", "output"])
         
     else:
-        usage()
+        usage(program_name)
         print(f"Unkown flag {flag}")
         exit(1)

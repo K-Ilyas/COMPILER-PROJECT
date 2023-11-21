@@ -3,15 +3,13 @@ var a := 3;
 if a < 5 then
     begin
         var b := 12;
-        write("Hello yes 3 < 5 var a := 7; \");
+        write("Hello yes 3 < 5 var a := 7\");
         write(15);
     end
 else
     begin
         write("Hello no 3 < 5");
     end
-
-
 while a >= 0 do
 begin
     write(a);
