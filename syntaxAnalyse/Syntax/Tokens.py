@@ -65,4 +65,5 @@ class Tokens(Enum):
     ReadFunction = auto(),
     ReadKeyword = auto(),
     CommentToken = auto(), 
-    IgnoreToken = auto()
+    IgnoreToken = auto(),
+    PointToken = auto()

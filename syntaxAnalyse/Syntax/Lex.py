@@ -100,13 +100,15 @@ class Lex:
                 case ';':
                     self.__type= Tokens.SemiColonToken
                     self.incPos()
+                case ".":
+                    self.__type= Tokens.PointToken
+                    self.incPos()
 
                 case '\\':
                     if self.lookahead() == 'n':
                      self.__type= Tokens.AntiSlashToken
                      self.__position +=2
                     else :
-
                       self.__type = Tokens.IgnoreToken
                       self.incPos()
                 
