@@ -292,14 +292,19 @@ if __name__ == "__main__":
     if flag == '-c':
         (input_file_path, argv) = uncons(argv)
         print(input_file_path)
-        Final(input_file_path, r"C:\Users\ilyas\Documents\compiler\output.c", '-c')
-        print("Generate the C program ")
-        call_cmd(["gcc", r"C:\Users\ilyas\Documents\compiler\output.c"])
-        # call_cmd(["rm", "output.c"])
-        print("Execute the programe")
-        call_cmd([r"C:\Users\ilyas\Documents\compiler\a.exe"])
-        # call_cmd(["ld","-o", "output", "output.o"])
-        # subprocess.call(["chmod","+x", "output"])
+        if sys.platform == 'win32':
+            Final(input_file_path, ROOT_DIR + r"\output.c", '-c')
+            print("Generate the C program ")
+            call_cmd(["gcc", ROOT_DIR + r"\output.c","prog"])
+            print("Execute the programe")
+            call_cmd([ROOT_DIR + r"\prog.exe"])
+        elif sys.platform == 'linux':
+            Final(input_file_path,"./output.c", '-c')
+            print("Generate the C program ")
+            call_cmd(["gcc","./output.c","prog"])
+            print("Execute the programe")
+            call_cmd(["./prog"])
+
         
     else:
         usage(program_name)
