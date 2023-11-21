@@ -63,9 +63,9 @@ def compile(child, output_file, parent=None, grandparent=None):
                     else : 
                         out.write("char* "+str(variable.getText())+"=")
                         variables['char*'].append(variable.getText())
-                # case Tokens.IdentifierToken:
-                #     if grandparent.getType() not in {Tokens.WriteFunction, Tokens.ReadFunction, Tokens.VariableDeclaration}:
-                #         out.write(str(child.getText()))
+                case Tokens.IdentifierToken:
+                    if grandparent.getType() not in {Tokens.WriteFunction, Tokens.ReadFunction} and parent.getType() != Tokens.VariableDeclaration:
+                        out.write(str(child.getText()))
                 case Tokens.EqualsToken:
                     if parent.getType() != Tokens.VariableDeclaration:
                         out.write("=")
@@ -162,8 +162,8 @@ def compile(child, output_file, parent=None, grandparent=None):
                       
                 case Tokens.StringToken:
                     if grandparent.getType() not in {Tokens.WriteFunction, Tokens.ReadFunction}:
-                        out.write('"' + str(child.getValue().replace("\n", "\\n")) + '"')
-                    
+                        out.write('"' + str(child.getValue().replace("\\", "\\")) + '"')
+                
                     
 
     for child2 in child.getChildrens():
@@ -290,7 +290,6 @@ if __name__ == "__main__":
  
     if flag == '-c':
         (input_file_path, argv) = uncons(argv)
-        print(input_file_path)
         Final(input_file_path, "output.c", '-c')
         print("Generate the C program ")
         call_cmd(["gcc", "output.c"])
@@ -301,6 +300,6 @@ if __name__ == "__main__":
         # subprocess.call(["chmod","+x", "output"])
         
     else:
-        usage()
+        usage(program_name)
         print(f"Unkown flag {flag}")
         exit(1)
