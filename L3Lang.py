@@ -244,11 +244,9 @@ def Final(file_path, output, flag):
                 print("")
 
         else :     
-            syntaxTree.getRoot().WriteTo(print)
-            print(result.getValue())
-       
+            if input("\nDo you want to see the parsing Tree ? [yes/no]  : ").strip().lower() == "yes" :
+              syntaxTree.getRoot().WriteTo(print)
 
-        
     if flag == '-c':
             initCompiler(output)               
             compile(syntaxTree.getRoot(),output)
