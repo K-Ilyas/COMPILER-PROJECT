@@ -301,7 +301,7 @@ if __name__ == "__main__":
         elif sys.platform == 'linux':
             Final(input_file_path,"./output.c", '-c')
             print("Generate the C program ")
-            call_cmd(["gcc","./output.c","-o prog"])
+            call_cmd(["gcc","./output.c","-oprog"])
             print("Execute the programe")
             call_cmd(["./prog"])
 
