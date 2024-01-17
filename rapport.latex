@@ -10,11 +10,74 @@
 \usepackage{minted}
 % Useful packages
 \usepackage{amsmath}
+\usepackage{forest}
 \usepackage{graphicx}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+% Custom colors
+\usepackage{color}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+\usepackage{listings}
+
+\usepackage{soul}
+\usepackage{tikz} % only to get \foreach
+\definecolor{lightgrey}{rgb}{0.925, 0.925, 0.925}
+\sethlcolor{lightgrey}
+\makeatletter
+\def\SOUL@hlpreamble{%
+    \setul{}{3.5ex}% increased by 1ex
+    \let\SOUL@stcolor\SOUL@hlcolor
+    \dimen@\SOUL@ulthickness
+    \dimen@i=-.75ex % increased by -0.25ex
+    \advance\dimen@i-.5\dimen@
+    \edef\SOUL@uldepth{\the\dimen@i}%
+    \let\SOUL@ulcolor\SOUL@stcolor
+    \SOUL@ulpreamble
+}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm,
+morekeywords={self},              % Add keywords here
+keywordstyle=\ttb\color{deepblue},
+emph={MyClass,__init__},          % Custom highlighting
+emphstyle=\ttb\color{deepred},    % Custom highlighting style
+stringstyle=\color{deepgreen},
+frame=tb,                         % Any extra options here
+showstringspaces=false
+}}
+
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% Python for external files
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
+
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
+
 
 \title{Compiler en Python}
-\author{Ilyas KRITETE Ahmed GUETTI}
+\author{Ilyas KRITET Ahmed GUETTI}
 
 \begin{document}
 \maketitle
@@ -27,13 +90,16 @@ Your abstract.
 
 \subsection{Exemple}
 
-\begin{minted}[mathescape, linenos]{pascal}
-program TestingUnit;
+\begin{minted}[mathescape, linenos, bgcolor=bg]{pascal}
+program test;
 var name := "John";
-var age := 25;
-var calc := ((12*9)+(3/9))/26;
+var age;
+var isCorrect := false;
+var calc := ((129)+(3/9))/26;
 write("Hello, my name is ", name, "\n");
-write("I am", age, "years old\n");
+write("Enter votre age \n");
+read(age);
+write("I am ", age, " years old\n");
 write("calc = ", calc);
 
 if age >= 18 then
@@ -45,32 +111,79 @@ else
         write("I am a minor\n");
     end
 
-var counter := 0;
-while counter > 3 do
-    begin
-        write("Count:", counter,"  ");
-        counter:=counter+1;
-    end
+var a :=15;
+while a >= 0 do
+begin
+    write(a,"\n");
+    a := a - 1;
+end
 \end{minted}
 
 equivalente dans python
-\begin{minted}[mathescape, linenos]{python}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{python}
 name = "John"
 age = 25
 calc = ((12*9)+(3/9))/26
 print(f"Hello, my name is {name});
 ptint(f"I am {age} years old");
 print(f"calc = {calc}");
-
+isCorrect = False
 if age >= 18:
     print("I am an adult");
 else:
     print("I am a minor");
 
-counter := 0;
-while counter > 3:
-    write("Count:", counter,"  ");
-    counter:=counter+1;
+a = 15;
+while a >= 0:
+    print(a)
+    a = a - 1
+\end{minted}
+
+
+Generated C code 
+\begin{minted}[mathescape, linenos, bgcolor=bg]{c}
+#include <stdio.h>
+#include <stdlib.h>
+int main(){
+;
+char* name="John";
+int age=0;
+char* isCorrect=0;
+int calc=129+3/9/26;
+printf("%s%s%s","Hello, my name is ",name,"\n");
+printf("%s","Enter votre age \n");
+scanf("%d",&age);
+printf("%s%d%s","I am ",age," years old\n");
+printf("%s%d","calc = ",calc);
+if(age>=18){
+printf("%s","I am an adult\n");
+}
+else{
+printf("%s","I am a minor\n");
+}
+int a=15;
+while(a>=0){
+printf("%d%s",a,"\n");
+a=a-1;
+}
+return 0;
+}
+\end{minted}
+\subsection{Exemple Boucle for}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{pascal}
+    /* this is a  loop*/
+for z := 12 to 100
+begin
+    write(z);
+end    
+\end{minted}
+
+En python 
+\begin{minted}[mathescape, linenos, bgcolor=bg]{Python}
+# this is a  loop
+for z in range(12, 1000)
+    print(z)
+
 \end{minted}
         \subsubsection{Déclarations de variables :}
             \begin{itemize}
@@ -89,7 +202,7 @@ while counter > 3:
                 \item\textbf{write("I am", age, "years old$\backslash$n");
 }: Affiche une ligne dans la console, imprimant le texte "I am " suivi de la valeur de la variable age et " years old".
 
-                \item\textbf{writeln('calc = ', calc,"$\backslash$")n;}:  Affiche une ligne dans la console, imprimant le texte "calc = " suivi de la valeur de la variable calc.
+                \item\textbf{write('calc = ', calc,"$\backslash$")n;}:  Affiche une ligne dans la console, imprimant le texte "calc = " suivi de la valeur de la variable calc.
             \end{itemize}
 
             \subsubsection{Instruction conditionnelle :}
@@ -99,19 +212,30 @@ while counter > 3:
         \begin{itemize}
                 \item\textbf{var counter := 0;}: Déclare une variable a de type integer et l'initialise avec la valeur 0. 
 
-                \item\textbf{while a < 3 do ...}:Exécute le bloc de code à l'intérieur de la boucle while tant que la condition a < 3 est vraie.
+                \item\textbf{while a $<$ 3 do ...}:Exécute le bloc de code à l'intérieur de la boucle while tant que la condition a < 3 est vraie.
                     \begin{itemize}
                         \item \textbf{write("Count:", counter,"  ");}: Affiche la valeur de a suivie de deux espaces dans la console.
 
                         \item  \textbf{counter := counter + 1;} Incrémente la valeur de a de 1 à chaque itération.
                     \end{itemize}
-            \end{itemize}        
-            
-\subsection{Syntax Token}
+            \end{itemize}
+            \subsection{Types de données}
+Dans notre compilateur \textbf{L3Lang}, nous avons 3 types :
+\begin{itemize}
+    \item entier (12, 343, 5, 6, -121, 43)
+    \item booléen (Vrai, Faux)
+    \item chaîne de caractères ("this is a String")
+\end{itemize}
 
-
-
-\begin{minted}[mathescape, linenos]{python}
+\subsection{Commentaires}
+En L3Lang, les commentaires sont représentés de la manière suivante :
+\begin{minted}{c}
+    /* Ceci est un commentaire qui sera ignoré */
+\end{minted}
+Cela est similaire à la syntaxe du langage C.
+          
+\section{Tokens}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{python}
 from enum import Enum, auto
 class Tokens(Enum):
     ProgramToken = auto(),
@@ -125,17 +249,41 @@ class Tokens(Enum):
     .
     ReadKeyword = auto(),
 \end{minted}
+Une représentation simple de chaque jeton en leur attribuant un nom spécifique lié à un numéro unique pour garantir que chaque jeton a une représentation unique. L'ajout d'un nouveau jeton génère automatiquement la représentation unique.
 
 
+\section{Syntax Token}
+\begin{minted}[mathescape, linenos , bgcolor=bg]{python}
+class SyntaxToken(SyntaxNode):
+    def __init__(self,type,pos,txt,value) -> None:
+        self.type = type
+        self.pos = pos
+        self.txt = txt
+        self.value = value
+    def type(self):
+        return self.type
+    def getType(self):
+        return self.type
+    def getText(self):
+        return self.txt
+    def getValue(self):
+        return self.value
+    def getPos(self):
+        return self.pos 
+    def getSpan(self):
+         return TextSpan(self.pos, 0 if self.txt is None else len(self.txt))
+\end{minted}
+Une classe utilitaire utilisée pour obtenir la valeur, le texte ou la position d'un jeton dans le code source, afin de mettre en évidence les problèmes, les erreurs, le contenu ou la représentation d'un jeton.
 
-\subsection{Parser}
+\section{Parser}
 
 \subsubsection*{Parse Variable declarition}
-\begin{minted}[mathescape, linenos]{python}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{python}
     def ParseVariableDeclaration(self):
         VariableDeclarations= []
         variablesPosition = []
-        expected = Tokens.ConstKeyword if  self.current().getType() == Tokens.ConstKeyword \
+        expected = Tokens.ConstKeyword if \ 
+        self.current().getType() == Tokens.ConstKeyword \
         else Tokens.VarKeyword
         keyword = self.MatchToken(expected)
         identifier = self.MatchToken(Tokens.IdentifierToken)
@@ -157,7 +305,8 @@ class Tokens(Enum):
 
         if self.current().getType() == Tokens.SemiColonToken :
             equals = None
-            intializer = LiteralExpressionSyntax(SyntaxToken(Tokens.NumberToken,0,"",0))
+            intializer = LiteralExpressionSyntax(SyntaxToken\
+            (Tokens.NumberToken,0,"",0))
             semiColonToken = self.MatchToken(Tokens.SemiColonToken)
         else :
           equals = self.MatchToken(Tokens.EqualsToken)
@@ -167,26 +316,68 @@ class Tokens(Enum):
         if enterTest :
 
            for i in range(deletePos,equalPos) :
-            #    print("this is wrong",self.__listTokens[i].getText())
                self.__listTokens[i] = SyntaxToken(Tokens.SpaceToken,i," ",None)
-            #    self.__position -=1
-
            for item in VariableDeclarations :
-
                for token in self.__listTokens[self.__position-1:equalPos-1:-1] :
-                   self.__listTokens.insert(self.__position,token)
-        
+               self.__listTokens.insert(self.__position,token)
                self.__listTokens.insert(self.__position,item)
                self.__listTokens.insert(self.__position,keyword)      
-        return VariableDeclarationSyntax(keyword,identifier,equals,intializer,semiColonToken)
+        return VariableDeclarationSyntax(keyword,identifier,equals,\
+        intializer,semiColonToken)
 \end{minted}
 
-this function parse varible declaration following a specific syntax after we lexe the code source we try to lookup for the const or the var keyword to start the variable declaration then we start our parcing looking for the identifier token who defines a variable name in addition we check for the comma seperartor so we can write multiple variablw declaration in one line, after that we verifie the existatnce of the equale Token, if it is the case we start parsing the Binary Expression start from the equale Token all the way to the semi colon Token that identify the end of the declaration, we should mention in any phase of the variable declaration, we raise
-an error whenever one of the Tokens mention above are missed
-Note : by default the variable get the number 0 if no value has given by the programmer.
-Finally we store the result in a class called SyntaxVariableDeclarition 
-\subsection{Lexer}
-\begin{minted}[mathescape, linenos]{python}
+Cette fonction analyse la déclaration de variables suivant une syntaxe spécifique après avoir analysé le code source. Nous cherchons d'abord le mot-clé "const" ou "var" pour commencer la déclaration de variable. Ensuite, nous commençons notre analyse à la recherche du jeton "identificateur" qui définit le nom de la variable. Nous vérifions également la présence du séparateur de virgule afin de pouvoir écrire plusieurs déclarations de variables sur une seule ligne. Ensuite, nous vérifions l'existence du jeton "égal". Si c'est le cas, nous commençons l'analyse de l'expression binaire à partir du jeton "égal" jusqu'au jeton point-virgule, qui identifie la fin de la déclaration. À chaque phase de la déclaration de variable, nous générons une erreur si l'un des jetons mentionnés ci-dessus est manquant. Remarque : par défaut, la variable prend la valeur 0 si aucune valeur n'est fournie par le programmeur. Enfin, nous stockons le résultat dans une classe appelée "SyntaxVariableDeclaration".
+
+
+
+
+\subsection*{Exemple}
+le nom de fichier est \textbf{test.L3Lang}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{pascal}
+program testCodeGen;
+    var a := 12;
+    var c:= a+3;
+    write(c);
+\end{minted}
+\begin{lstlisting}[language=bash]
+  $ python L3Lang -s test.L3Lang
+\end{lstlisting}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{tree.png}
+\caption{\label{fig:SyntaxTree} SyntaxTree}
+\end{figure}
+
+
+\subsection*{Analyseur de descente prédictive récursive:}
+L’analyseur de descente récursive est une méthode descendante d’analyse syntaxique dans laquelle un ensemble de procédures récursives est utilisé pour traiter les entrées. Une procédure est associée à chaque non-terminal d’une grammaire. Ici, nous considérons une forme simple d’analyse de descente récursive appelée Predictive Recursive Descent Parser, dans laquelle le symbole d’anticipation détermine sans ambiguïté le flux de contrôle à travers le corps de la procédure pour chaque non-terminal. La séquence d’appels de procédure lors de l’analyse d’une string d’entrée définit implicitement un arbre d’analyse pour l’entrée et peut être utilisée pour créer un arbre d’analyse explicite, si vous le souhaitez. Dans l’analyse par descente récursive, l’analyseur peut avoir le choix entre plusieurs productions pour une seule instance d’entrée, le concept de retour en arrière entre en jeu.\\
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{fig05.png}
+\caption{\label{fig:SyntaxTree} SyntaxTree}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{fig06.png}
+\caption{\label{fig:SyntaxTree} SyntaxTree}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{fig07.png}
+\caption{\label{fig:SyntaxTree} SyntaxTree}
+\end{figure}
+
+
+\section{Lexer}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{python}
         match self.current():
                 case '\0':
                     self.__type= Tokens.EndOfFileToken
@@ -222,10 +413,10 @@ Finally we store the result in a class called SyntaxVariableDeclarition
                         self.incPos()
         \end{minted}
 
-in this phase we turn the text into list of Tokens like `NumberToken`, `StringToken`, ... etc. By Lexing them character by character while checking types of the provided Token {Lexem}.
+Dans cette phase, nous transformons le texte en une liste de jetons tels que \textbf{NumberToken}, \textbf{StringToken}, etc. en les analysant caractère par caractère tout en vérifiant les types de jetons \{Lexem\} fournis.
 
-\subsection{Binder}
-\begin{minted}[mathescape, linenos]{python}
+\section{Binder}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{python}
  @staticmethod
     def getBinaryOperators():
 
@@ -248,11 +439,12 @@ in this phase we turn the text into list of Tokens like `NumberToken`, `StringTo
             BoundBinaryOperator(
                 Tokens.BangEqualsToken, BoundBinaryOperatorType.NotEquals, bool),
         \end{minted}
-The Binder in the parte of the compiler that is responsible of type checking and symentique analysis, it is a container that wrappe the parser to provide meaningfull information about the different branches provided by the parser, then apply a list of functions to insure variable names in scope, performing type checks, and enforcing correctness rules.
+Le Binder dans la partie du compilateur est responsable de la vérification des types et de l'analyse sémantique. C'est un conteneur qui encapsule le parseur pour fournir des informations significatives sur les différentes branches fournies par le parseur, puis applique une liste de fonctions pour garantir la présence des noms de variables dans la portée, effectuer des vérifications de type et faire respecter les règles de correction.
 
 
-\subsection{Evaluator}
-\begin{minted}[mathescape, linenos]{python}
+
+\section{Evaluator}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{python}
      def EvaluateBinaryExpression(self,b):
 
             left = self.ExpressionResult(b.getLeft())
@@ -290,15 +482,164 @@ The Binder in the parte of the compiler that is responsible of type checking and
                     return left <= right
                 case _:
                     raise Exception(
-                        "Unexpected Binary operator {token}".format(token=b.getOp()))
+                    "Unexpected Binary operator {token}".format(token=b.getOp()))
         \end{minted}
-it is a program that walks the syntax tree directly and calculate the result of the syntax tree povided by the parser after bind it, it has several functions to handle different cases like variable declaration, while evaluation, if statement evaluation, ... etc.
+Il s'agit d'un programme qui parcourt directement l'arbre syntaxique et calcule le résultat de l'arbre syntaxique fourni par le parseur après l'avoir lié. Il possède plusieurs fonctions pour gérer différents cas tels que la déclaration de variables, l'évaluation de boucles "while", l'évaluation des instructions "if", etc.
 
-\subsection{Code Generator}
+\section{Code Generator}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{python}
+def compile(child, output_file, parent=None, grandparent=None):
+    global variables
+    if isinstance(child, SyntaxToken):
+        with open(output_file, "a") as out:
+            match child.getType():
+                case Tokens.BlockStatement:
+                    out.write("\n")              
+                case Tokens.VarKeyword:
+                    variable = [e[1] for e in getSibling(parent) if \
+                    e[0] == Tokens.IdentifierToken][0]
+                    if Tokens.NumberToken in [a.getType()\
+                    for a in getAllChildren(parent)]:
+                        out.write("int "+str(variable.getText())+"=")
+                        variables['int'].append(variable.getText()) 
+                    else : 
+                        out.write("char* "+str(variable.getText())+"=")
+                        variables['char*'].append(variable.getText())
+                case Tokens.IdentifierToken:
+                    if grandparent.getType() not in {Tokens.WriteFunction, \
+                    Tokens.ReadFunction} and \
+                    parent.getType() != Tokens.VariableDeclaration:
+                        out.write(str(child.getText()))
+                case Tokens.EqualsToken:
+                    if parent.getType() != Tokens.VariableDeclaration:
+                        out.write("=")
+                case Tokens.NumberToken:
+                    if grandparent.getType() not in {Tokens.WriteFunction, \
+                    Tokens.ReadFunction}:
+                        out.write(str(child.getValue()))
+                case Tokens.TrueKeyword:
+                    out.write("1")
+                case Tokens.FalseKeyword:
+                    out.write("0")
+                case Tokens.CloseBraceToken:
+                    out.write("}\n")
+                    .
+                    .
+                    .
+                case Tokens.ReadKeyword:
+                    AllChildren = getAllChildren(parent)
+                   
+                    pattern = ""
+                    varName = []
+                    for node in AllChildren:
+                        if node.getType() == Tokens.ReadKeyword:
+                            out.write("scanf(")
+                        elif node.getType() == Tokens.IdentifierToken:
+                            varName.append(str(node.getText()))
+                            if node.getText() in variables['int']: pattern += "%d"
+                            else: pattern += "%s"
+                        
+                    out.write('"'+pattern+'",&')
+                    out.write(',&'.join(map(str,varName)))
+                    out.write(")")
+        \end{minted}
+Cette partie du code est responsable de générer du code C en se basant sur l'arbre d'analyse syntaxique généré à l'étape précédente, puis le reconstruire selon la syntaxe C. Ensuite, elle le compile en utilisant GCC et l'exécute, tout en maintenant une trace des déclarations multiples et des portées imbriquées.
+
+
+\subsection*{Exemple}
+le nom de fichier est \textbf{test.L3Lang}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{pascal}
+    program testCodeGen
+        var a := 12;
+        var b := 14;
+        var c:= a+b;
+        write("c= ",c,"\n")
+\end{minted}
+\begin{lstlisting}[language=bash]
+  $ python L3Lang -c test.L3Lang
+\end{lstlisting}
+Ce code sera traduit en code C suivant.
+\begin{minted}[mathescape, linenos, bgcolor=bg]{c}
+    #include <stdio.h>
+    #include <stdlib.h>
+    int main(){
+        int  a = 12;
+        int b = 14;
+        int c = a +b;
+        print("%s%d%s","c= ",c,"\n");
+        return 0;
+    }
+\end{minted}
 
 
 
-\subsection{Execute}
+
+\section{Execution}
+\begin{minted}[mathescape, linenos, bgcolor=bg]{python}
+def compile(child, output_file, parent=None, grandparent=None):
+    global variables
+    if isinstance(child, SyntaxToken):
+        with open(output_file, "a") as out:
+            match child.getType():
+                case Tokens.BlockStatement:
+                    out.write("\n")              
+                case Tokens.VarKeyword:
+                    variable = [e[1] for e in getSibling(parent) if \
+                    e[0] == Tokens.IdentifierToken][0]
+                    if Tokens.NumberToken in [a.getType()\
+                    for a in getAllChildren(parent)]:
+                        out.write("int "+str(variable.getText())+"=")
+                        variables['int'].append(variable.getText()) 
+                    else : 
+                        out.write("char* "+str(variable.getText())+"=")
+                        variables['char*'].append(variable.getText())
+                case Tokens.IdentifierToken:
+                    if grandparent.getType() not in \
+                    {Tokens.WriteFunction, Tokens.ReadFunction} and\
+                    parent.getType() != Tokens.VariableDeclaration:
+                        out.write(str(child.getText()))
+                case Tokens.EqualsToken:
+                    if parent.getType() != Tokens.VariableDeclaration:
+                        out.write("=")
+                case Tokens.NumberToken:
+                    if grandparent.getType() not in {Tokens.WriteFunction, \
+                    Tokens.ReadFunction}:
+                        out.write(str(child.getValue()))
+                case Tokens.TrueKeyword:
+                    out.write("1")
+                case Tokens.FalseKeyword:
+                    out.write("0")
+                case Tokens.CloseBraceToken:
+                    out.write("}\n")
+                    .
+                    .
+                    .
+                case Tokens.ReadKeyword:
+                    AllChildren = getAllChildren(parent)
+                    pattern = ""
+                    varName = []
+                    for node in AllChildren:
+                        if node.getType() == Tokens.ReadKeyword:
+                            out.write("scanf(")
+                        elif node.getType() == Tokens.IdentifierToken:
+                            varName.append(str(node.getText()))
+                            if node.getText() in variables['int']: pattern += "%d"
+                            else: pattern += "%s"
+                        
+                    out.write('"'+pattern+'",&')
+                    out.write(',&'.join(map(str,varName)))
+                    out.write(")")
+        \end{minted}
+
+        Ce script Python agit comme une interface en ligne de commande pour notre compilateur, vous permettant de simuler ou de compiler un programme dans la language \textbf{L3Lang}. Lorsque tu exécutes le script avec certaines options, comme '-s' pour la simulation ou '-c' pour la compilation, tu dois également fournir le chemin vers le fichier source que tu veux traiter.
+
+Le script prend ensuite le code source fourni, génère du code en langage C en fonction de ce dernier, puis le compile en utilisant GCC. Si tu choisis la simulation ('-s'), le script affiche le résultat de l'evaluation du programe sans le traduire en langugue sible \textbf{C}. En revanche, si tu choisis la compilation ('-c'), il crée un exécutable et peut même le lancer automatiquement.
+
+Le script gère également les erreurs et fournit des informations de diagnostic si quelque chose ne se passe pas comme prévu pendant la simulation ou la compilation. Il s'agit essentiellement d'un outil pratique pour expérimenter avec un langage de programmation personnalisé et voir comment il se comporte lors de la simulation ou de la compilation.
+
+
+
+\subsection*{Exemple de comlilation}
 Linux:
 \begin{lstlisting}[language=bash]
   $ /usr/bin/python3 L3Lang <FLAGS> <INPUT FILE>
@@ -308,16 +649,34 @@ Windows:
   $ python L3Lang <FLAGS> <INPUT FILE>
 \end{lstlisting}
 
-then you can fount the result in the build directory that is going to be generated automatecly
+Ensuite, tu pourras trouver le résultat dans le répertoire "build" qui sera généré automatiquement.
 
 
 
-\begin{figure}
-\centering
-\includegraphics[width=0.25\linewidth]{frog.jpg}
-\caption{\label{fig:frog}This frog was uploaded via the file-tree menu.}
-\end{figure}
+\section{Supported Feauters}
+\begin{enumerate}
+    \item Basic REPL (read-eval-print loop) for an expression evaluator
+    \item Added lexer, a parser, evaluator, binder ( to verify the result of each statement ) 
+    \item Handle `+`, `-`, `*`, `/`, `||`, `&&` and parenthesized expressions
+    \item support $<$  , $<=$, $>=$, and $>$
+    \item Support `int`, `string`, `bool` Data types.
+    \item Print syntax trees ( Tree represenation of the parser )
+    \item support unray operators (`-`,`+`)
+    \item declare variables : `var` to declare global variables and `const` to declare read-only variables
+    \item support scopes ( define nested scops using Curly brackets `begin`,`end`)
+    \item support position and Line Numbers
+    \item support if-statements, while-statements and for-statements
+    \item support loops :(for, while) and nested loops
+\end{enumerate}
 
+
+
+
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.25\linewidth]{frog.jpg}
+% \caption{\label{fig:frog}This frog was uploaded via the file-tree menu.}
+% \end{figure}
 \bibliographystyle{alpha}
 \bibliography{sample}
 
