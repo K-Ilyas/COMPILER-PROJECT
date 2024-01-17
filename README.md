@@ -634,7 +634,7 @@ pratique pour expérimenter avec un langage de programmation personnalisé
 et voir comment il se comporte lors de la simulation ou de la
 compilation.
 
-## Exemple de comlilation {#exemple-de-comlilation .unnumbered}
+## Exemple de comlilation 
 
 Linux:
 
