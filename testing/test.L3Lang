@@ -1,21 +1,26 @@
-program AhmedCGen;
-var a := 3;
-const b := 45;
-var c := 23; 
-write(a);
-if a < 5 then
+program test;
+var name := "John";
+var age;
+var isCorrect := false;
+var calc := ((129)+(3/9))/26;
+write("Hello, my name is ", name, "\n");
+write("Enter votre age \n");
+read(age);
+write("I am ", age, " years old\n");
+write("calc = ", calc);
+
+if age >= 18 then
     begin
-        var b := 12;
-        write("Akram is a gangstar from Blida");
-        write(15);
+        write("I am an adult\n");
     end
 else
     begin
-        
-        write("Hello no 3 < 5");
+        write("I am a minor\n");
     end
+
+var a :=15;
 while a >= 0 do
 begin
-    write(a, "\n");
+    write(a,"\n");
     a := a - 1;
 end
