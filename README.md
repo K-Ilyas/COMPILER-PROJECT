@@ -681,9 +681,6 @@ sera généré automatiquement.
 
 12. support loops :(for, while) and nested loops
 
-<<<<<<< HEAD
-
-=======
 * Basic REPL (read-eval-print loop) for an expression evaluator
 * Added lexer, a parser, evaluator, binder ( to verify the result of each statement ) 
 * Handle `+`, `-`, `*`, `/`, `||`, `&&` and parenthesized expressions
@@ -695,7 +692,6 @@ sera généré automatiquement.
 * support scopes ( define nested scops using Curly brackets `begin`,`end`)
 * support position and Line Numbers
 * support if-statements, while-statements and for-statements
->>>>>>> efac2e11c6eb21d13fd89a3894c1bca047355767
 * Tree example :
   
 ``` 
@@ -709,8 +705,6 @@ sera généré automatiquement.
     │           └──Tokens.NumberToken  20
     └──Tokens.EndOfFileToken
 ```
-<<<<<<< HEAD
-=======
 
 ### project description :
 
@@ -722,4 +716,3 @@ sera généré automatiquement.
 - Code Generator : it is a program that transform the tree provided by the parser into c code.
 
 
->>>>>>> efac2e11c6eb21d13fd89a3894c1bca047355767
