@@ -122,15 +122,15 @@ le résultat à la variable calc. Le calcul est ((12 \* 9) + (3 / 9)) /
 
 ### Sortie (Output) :
 
--   **write(\"Hello, my name is \", name, \"$\backslash$n\");**: Affiche
+-   **write(”Hello, my name is ”, name, ”\n”);**: Affiche
     une ligne dans la console, imprimant le texte \"Hello, my name is \"
     suivi de la valeur de la variable name.
 
--   **write(\"I am\", age, \"years old$\backslash$n\");** : Affiche une
+-   **write(”I am”, age, ”years old\n”);** : Affiche une
     ligne dans la console, imprimant le texte \"I am \" suivi de la
     valeur de la variable age et \" years old\".
 
--   **write('calc = ', calc,\"$\backslash$\")n;**: Affiche une ligne
+-   **write(’calc = ’, calc,”\n”);**: Affiche une ligne
     dans la console, imprimant le texte \"calc = \" suivi de la valeur
     de la variable calc.
 
@@ -292,7 +292,7 @@ défaut, la variable prend la valeur 0 si aucune valeur n'est fournie par
 le programmeur. Enfin, nous stockons le résultat dans une classe appelée
 \"SyntaxVariableDeclaration\".
 
-## Exemple {#exemple-1 .unnumbered}
+## Exemple 
 
 le nom de fichier est **test.L3Lang**
 
@@ -308,9 +308,9 @@ $ python L3Lang -s test.L3Lang
 ```
 
 ![[]{#fig:SyntaxTree label="fig:SyntaxTree"}
-SyntaxTree](tree.png){#fig:SyntaxTree width="0.75\\linewidth"}
+SyntaxTree](tree.png)
 
-## Analyseur de descente prédictive récursive: {#analyseur-de-descente-prédictive-récursive .unnumbered}
+## Analyseur de descente prédictive récursive: 
 
 L'analyseur de descente récursive est une méthode descendante d'analyse
 syntaxique dans laquelle un ensemble de procédures récursives est
