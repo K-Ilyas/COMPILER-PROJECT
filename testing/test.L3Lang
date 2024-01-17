@@ -1,0 +1,21 @@
+program AhmedCGen;
+var a := 3;
+const b := 45;
+var c := 23; 
+write(a);
+if a < 5 then
+    begin
+        var b := 12;
+        write("Akram is a gangstar from Blida");
+        write(15);
+    end
+else
+    begin
+        
+        write("Hello no 3 < 5");
+    end
+while a >= 0 do
+begin
+    write(a, "\n");
+    a := a - 1;
+end

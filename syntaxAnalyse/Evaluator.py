@@ -23,8 +23,9 @@ from Binding.BoundBinaryOperatorType import BoundBinaryOperatorType
 from Binding.BoundLiteralExpression import BoundLiteralExpression
 from Binding.BoundUnrayExpression import BoundUnrayExpression
 from Binding.BoundUnrayOperatorType import BoundUnrayOperatorType
-sys.path.insert(0, 'C:/Users/ilyas/Documents/compiler/syntaxAnalyse/Syntax')
-
+import os
+ROOT_DIR = os.path.abspath(os.curdir)
+sys.path.insert(0, ROOT_DIR+'/syntaxAnalyse/Syntax')
 
 # The `Evaluator` class is used to evaluate mathematical expressions represented by a syntax tree.
 

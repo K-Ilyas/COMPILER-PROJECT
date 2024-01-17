@@ -88,7 +88,6 @@ class Lex:
                 case '(':
                     self.__type= Tokens.OpenParenthesisToken
                     self.incPos()
-                    
                 case ')':
                     self.__type= Tokens.CloseParenthesisToken
                     self.incPos()
@@ -101,7 +100,10 @@ class Lex:
                 case ';':
                     self.__type= Tokens.SemiColonToken
                     self.incPos()
-                
+                case ".":
+                    self.__type= Tokens.PointToken
+                    self.incPos()
+
                 case '\\':
                     if self.lookahead() == 'n':
                      self.__type= Tokens.AntiSlashToken
@@ -238,6 +240,5 @@ class Lex:
                 self.incPos()
 
         txt = self.text.ToString_start( self.__start,self.__position)
-
-        self.__type = SynataxFacts.getKeywordType(txt)
         
+        self.__type = SynataxFacts.getKeywordType(txt)

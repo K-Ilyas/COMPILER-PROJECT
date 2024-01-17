@@ -1,0 +1,16 @@
+program TestingUnit;
+var name := "John";
+var age := 25;
+
+write("Hello, my name is ", name, "\n");
+write("I am", age, "years old\n");
+
+if age >= 18 then
+    begin
+        write("I am an adult\n");
+    end
+else
+    begin
+        write("I am a minor\n");
+    end
+

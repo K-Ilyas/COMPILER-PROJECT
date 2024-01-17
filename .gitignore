@@ -1,1 +1,6 @@
 __pycache__/
+a.out
+*.c
+*.exe
+prog
+build

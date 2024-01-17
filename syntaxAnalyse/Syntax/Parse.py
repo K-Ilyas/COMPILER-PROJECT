@@ -21,7 +21,6 @@ from ReadFunctionSyntax import ReadFunctionSyntax
 from SourceText import SourceText
 from SyntaxFacts import SynataxFacts
 from SyntaxToken import SyntaxToken
-import SyntaxTree
 from Tokens import Tokens
 from UnrayExpressionSyntax import UnrayExpressionSyntax
 from VariableDeclarationSyntax import VariableDeclarationSyntax
@@ -42,22 +41,25 @@ class Parse:
         self.__errors = DiagnosticBag()
         isString = False
         while True:
-            token = lex.NextToken()
-   
+            token = lex.NextToken()               
+
             if token.getType() == Tokens.EndOfFileToken:
                 self.__listTokens.append(token)
                 break
             if token.getType() == Tokens.DoubleQuteToken :
                 isString = not isString
 
-            if  (not isString) and  token.getType() != Tokens.BadToken and token.getType() != Tokens.CommentToken and token.getType() != Tokens.SpaceToken:
+            if   token.getType() == Tokens.IgnoreToken :
+                token.txt = r"\\"
+                token.value = r"\\"
+
+            if  (not isString) and  token.getType() != Tokens.BadToken and token.getType() != Tokens.CommentToken and token.getType() != Tokens.SpaceToken :
                 self.__listTokens.append(token)
             else :
-                if token.getType() != Tokens.BadToken and token.getType() != Tokens.CommentToken  and isString :
+                if token.getType() != Tokens.BadToken and token.getType() != Tokens.CommentToken   and isString :
                     self.__listTokens.append(token)
-       
+            
         self.__errors.AddErrors(lex.getErrors())
-        # self.__errors =  deepcopy(lex.getErrors())
 
     # get a token with a offset as a margin
     def look(self, offset: int) -> SyntaxToken:
@@ -95,9 +97,6 @@ class Parse:
         
         self.__errors.ReportUnexpectedToken(
             self.current().getSpan(), self.current().getType(), type)
-        
-        # self.__errors.append("Error : Unexptected Token {type} expected {ty}".format(
-        #     type=self.current().getType(), ty=type))
 
         return SyntaxToken(type, self.current().getPos(), "''", None)
     
@@ -300,12 +299,6 @@ class Parse:
         
         return binaryExpression
 
-        # left = self.ParseBinaryExpression()
-        # while self.current().getType() == Tokens.EqualsToken :
-        #     operatorToken = self.NextToken()
-        #     right = self.parseAssignmentExpression()
-        #     left = AssignmentExpressionSyntax()
-
 
     def ParseBinaryExpression(self, parentPrecedence=0):
 
@@ -321,7 +314,6 @@ class Parse:
         else:
             left = self.ParsePrimaryExpression()
 
-            # print(left.getIdentifierToken().getText())
 
         while True:
             precedence = SynataxFacts.getBinayOperatorPrecedence(
@@ -334,26 +326,6 @@ class Parse:
             left = BinaryExpressionSyntax(left, operatorToken, right)
         
         return left
-
-
-    # def ParseTerm(self):
-    #     left = self.ParseFactor()
-
-
-    #     while self.current().getType() == Tokens.PlusToken or self.current().getType() == Tokens.MinusToken :
-    #         opertorToken = self.NextToken()
-    #         right = self.ParseFactor()
-    #         left = BinaryExpressionSyntax(left,opertorToken,right)
-    #     return left
-
-
-    # def ParseFactor(self):
-    #     left = self.ParsePrimaryExpression()
-    #     while self.current().getType() == Tokens.StarToken or self.current().getType() == Tokens.SlashToken :
-    #         opertorToken = self.NextToken()
-    #         right = self.ParsePrimaryExpression()
-    #         left = BinaryExpressionSyntax(left,opertorToken,right)
-    #     return left
 
 
     def type(self):
@@ -374,26 +346,6 @@ class Parse:
             case _:
                 return self.ParseNameExpression()
     
-        # if self.current().getType() == Tokens.OpenParenthesisToken:
-        #     left = self.NextToken()
-        #     # I need some changes her
-        #     expression = self.ParseExpression()
-        #     right = self.MatchToken(Tokens.CloseParenthesisToken)
-        #     return ParenthesizedExpressionSyntax(left, expression, right)
-        # elif self.current().getType() == Tokens.TrueKeyword or self.current().getType() == Tokens.FalseKeyword:
-        #     keywordToken = self.NextToken()
-        #     value = keywordToken.getType() == Tokens.TrueKeyword
-
-        #     return LiteralExpressionSyntax(keywordToken, value)
-        # elif self.current().getType() == Tokens.IdentifierToken :
-        #     identifierToken = self.NextToken()
-        #     # if self.current().getType() == Tokens.EqualsToken :
-        
-         
-        #     return NameExpressionSyntax(identifierToken)
-
-        # numberToken = self.MatchToken(Tokens.NumberToken)
-        # return LiteralExpressionSyntax(numberToken)
     
     def ParseParenthesizedExpression(self):
             left = self.MatchToken(Tokens.OpenParenthesisToken)
